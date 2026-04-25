@@ -1,0 +1,43 @@
+# Git ignore for VibeGuard
+
+# Secrets & credentials
+.env
+*.key
+*.pem
+*.secret
+secrets.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+ENV/
+
+# VibeGuard generated files (optional to commit)
+COMPRESSED_CONTEXT.txt
+BENCHMARK_REPORT.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Node (if testing JS projects with VibeGuard)
+node_modules/
+
+# Test artifacts
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
