@@ -82,6 +82,21 @@ def run_build(prompt: str, target_dir: str = None) -> None:
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
         progress.add_task("Designing project structure and tech stack...", start=True)
         
+        # RAG Flywheel: Fetch past learnings
+        past_learnings = ""
+        try:
+            kb_file = Path.home() / ".vibeguard" / "global_learnings.json"
+            if kb_file.exists():
+                with open(kb_file, "r", encoding="utf-8") as f:
+                    learnings = json.load(f)
+                    if learnings:
+                        past_learnings = "\n\nPAST LEARNINGS (Avoid previous mistakes):\n"
+                        for l in learnings[-3:]: # Grab last 3 attempts
+                            status = "SUCCESS" if l['success'] else "FAILED"
+                            past_learnings += f"- Prompt: {l['prompt']} | Status: {status} | Error: {l['error_logs']}\n"
+        except Exception:
+            pass
+
         system_prompt = (
             "You are an elite Senior Staff Engineer designing a project from scratch.\n"
             "Given the user's idea, decide on the absolute best, modern tech stack.\n"
@@ -92,6 +107,7 @@ def run_build(prompt: str, target_dir: str = None) -> None:
             '    "relative/path/to/file1.ext": "Detailed description of what goes in this file"\n'
             "  }\n"
             "}"
+            + past_learnings
         )
         
         response = client.chat.completions.create(
