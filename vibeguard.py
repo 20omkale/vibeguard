@@ -239,4 +239,43 @@ def build(prompt: str, target_dir: str):
 # ─── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    cli()
+    if len(sys.argv) == 1:
+        # User double-clicked the executable (no CLI arguments)
+        console.print(BANNER)
+        console.print(Panel("[bold green]Welcome to VibeGuard Agent[/bold green]\n\n"
+                            "Select an option to proceed:", 
+                            border_style="green"))
+        
+        console.print("  [cyan]1.[/cyan] 🏗️  [bold]Build New Project[/bold] (Autonomous Factory)")
+        console.print("  [cyan]2.[/cyan] 🛡️  [bold]Protect Existing Project[/bold] (Initialize & Scan PROJECT_MEMORY.md)")
+        console.print("  [cyan]3.[/cyan] 📊  [bold]Score Existing Project[/bold] (Health Check)")
+        
+        try:
+            choice = input("\nSelect (1/2/3): ").strip()
+            
+            if choice == "1":
+                console.print("\n[bold cyan]What would you like to build today?[/bold cyan]")
+                prompt = input(">>> ")
+                if prompt.strip():
+                    run_build(prompt.strip(), ".")
+            elif choice == "2":
+                console.print("\n[bold cyan]Enter the full path to your existing project (or press Enter for current folder):[/bold cyan]")
+                path = input(">>> ").strip() or "."
+                run_init(path)
+                run_scan(path)
+            elif choice == "3":
+                console.print("\n[bold cyan]Enter the full path to your existing project (or press Enter for current folder):[/bold cyan]")
+                path = input(">>> ").strip() or "."
+                run_score(path)
+            else:
+                console.print("[yellow]Invalid choice. Exiting.[/yellow]")
+        except KeyboardInterrupt:
+            console.print("\n[yellow]Cancelled.[/yellow]")
+        except Exception as e:
+            console.print(f"[red]Error: {e}[/red]")
+        
+        # Prevent the terminal window from instantly closing when done
+        input("\nPress Enter to exit...")
+    else:
+        # Standard CLI usage
+        cli()
