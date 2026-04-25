@@ -1,181 +1,100 @@
-# 🛡️ VibeGuard — AI-Native Developer Guardrail & Memory Agent
+<div align="center">
 
-> **Stop losing context. Stop breaking things accidentally. Ship like a senior dev — even when you're vibe coding with AI.**
+# 🛡️ VibeGuard
+**The Autonomous Software Factory powered by Local AI.**
 
-VibeGuard is a CLI tool that acts as a safety net around your AI-assisted development sessions. It maintains a persistent **PROJECT_MEMORY.md** of your codebase, detects regressions before they hit production, scores your project health, and compresses your code to fit more context into AI windows.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Ollama Supported](https://img.shields.io/badge/Ollama-Supported-white.svg)](https://ollama.com/)
+[![OpenAI Compatible](https://img.shields.io/badge/OpenAI-Compatible-412991.svg)](https://openai.com/)
+
+*Type a prompt. Watch the code build itself.*
+
+</div>
+
+---
+
+## 🚀 What is VibeGuard?
+
+VibeGuard is an **autonomous AI coding agent** that acts like a Senior Staff Engineer on your computer. 
+Instead of chatting with AI in a browser and copying/pasting code manually, you give VibeGuard a single prompt. It will architect the project, choose the tech stack, generate all the files, and use built-in **self-healing loops** to fix its own bugs.
+
+### The Dual-Engine Brain
+VibeGuard is designed to be accessible to everyone. It features a Dual-Engine LLM router:
+- **🆓 Free Local Engine:** Automatically detects and connects to [Ollama](https://ollama.com/) to write code using local, open-source models completely offline for $0.
+- **☁️ Premium Cloud Engine:** Paste your OpenAI key into `.env` to unleash GPT-4o for complex, enterprise-grade architecture.
+
+---
+
+## ⚡ How It Works
+
+```mermaid
+graph LR
+    A[User Prompt] --> B{LLM Gateway}
+    B -->|API Key Found| C[OpenAI Cloud]
+    B -->|No API Key| D[Ollama Local]
+    C --> E[Architect Phase]
+    D --> E
+    E --> F[Code Generation]
+    F --> G[Self-Healing Loop]
+    G -->|Syntax Error| F
+    G -->|Success| H[Project Built!]
+    H --> I[(Telemetry Flywheel)]
+```
+
+---
+
+## 📦 Quick Start (Using the Executable)
+
+You do not need Python or any coding experience to run VibeGuard.
+
+1. **Download** the `VibeGuard.exe` file from the [Releases](#) tab.
+2. **Open your Terminal** (Command Prompt or PowerShell).
+3. **Run the agent:**
+```bash
+.\VibeGuard.exe build "Create a beautiful real estate landing page using React"
+```
+
+*Note: If you want to use the Free Local Engine, ensure you have downloaded [Ollama](https://ollama.com/) and run `ollama run llama3` in the background first!*
+
+---
+
+## 🛠️ For Developers (Source Code)
+
+If you want to build from source, modify the agent, or compile your own `.exe`:
+
+```bash
+# 1. Clone and install
+git clone https://github.com/yourusername/vibeguard.git
+cd vibeguard
+pip install -r requirements.txt
+
+# 2. Run the agent natively
+python vibeguard.py build "Build a snake game in Python"
+
+# 3. Compile the standalone .exe for distribution
+python compile_app.py
+```
 
 ---
 
 ## ✨ Features
 
-| Command | What it does |
+| Feature | Description |
 |---------|-------------|
-| `vibeguard init` | Detects your stack → generates `.cursorrules` + scaffolds `PROJECT_MEMORY.md` |
-| `vibeguard scan` | Indexes your entire codebase → updates `PROJECT_MEMORY.md` |
-| `vibeguard guard` | Snapshot-based regression detector — alerts on deleted exports/functions |
-| `vibeguard diagnose` | Context-aware error analysis with cross-referencing against your memory |
-| `vibeguard compress` | Strips your code down to essentials for AI context windows (up to 70% savings) |
-| `vibeguard score` | 10,000-point project health score across 7 dimensions |
-| `vibeguard status` | One-shot overview: memory freshness + health score |
+| 🤖 **Autonomous Coding** | Creates folders, files, and writes code from a single text prompt. |
+| 🛡️ **Self-Healing Loop** | If it writes buggy code, it detects the error and rewrites it automatically. |
+| 🧠 **Project Memory** | Prevents "Context Collapse" by scanning and remembering massive codebases. |
+| 🗜️ **Token Compression** | Squeezes out whitespace and comments to save you 40% on API costs. |
+| 📈 **Data Flywheel** | Built-in telemetry securely syncs successful build data to a central database. |
 
 ---
 
-## 🚀 Quick Start
+## 🔮 The Vision
 
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Initialize VibeGuard in your project
-cd your-project/
-python vibeguard.py init
-
-# 3. Scan your codebase
-python vibeguard.py scan
-
-# 4. Check project health
-python vibeguard.py score
-
-# 5. Before a big AI session — watch for regressions
-python vibeguard.py guard
-```
+VibeGuard was originally built to be a safety-net CLI tool for Cursor users. It has now evolved into an end-to-end Autonomous Software Factory capable of building real-world applications. By collecting telemetry and feeding errors back into its self-healing loop, VibeGuard is designed to get smarter every single time someone uses it.
 
 ---
-
-## 📋 Commands in Detail
-
-### `vibeguard init [PATH]`
-Runs stack auto-detection (Python, JS/TS, Go, Rust, Java) and generates:
-- **`.cursorrules`** — Cursor AI rules tailored to your detected stack
-- **`.vibeguard/stack.json`** — Stack config for future scans
-- **`PROJECT_MEMORY.md`** — Scaffold (run `scan` to fully populate)
-
-### `vibeguard scan [PATH]`
-Walks your codebase and extracts:
-- All functions, classes, and their signatures (with docstrings)
-- Import graphs
-- Open TODOs/FIXMEs
-- Entry points
-- Language/file breakdown stats
-
-Outputs `PROJECT_MEMORY.md` — **paste this at the start of every AI session.**
-
-### `vibeguard guard [PATH]`
-1. Takes a snapshot of your public API surface (all exported functions/classes)
-2. Waits for you to make changes
-3. Diffs the before/after
-4. Reports regressions by severity (HIGH/MEDIUM/INFO)
-5. Generates an **AI safety prompt** you can paste into Cursor/Claude to fix issues
-
-### `vibeguard diagnose [-e ERROR | -f FILE] [PATH]`
-Matches error text against 15+ known error patterns across Python, JavaScript, and Network errors. Cross-references identifiers against `PROJECT_MEMORY.md` to find where in YOUR code the issue originates.
-
-```bash
-# Inline error
-vibeguard diagnose -e "ModuleNotFoundError: No module named 'requests'"
-
-# From a log file
-vibeguard diagnose -f crash.log
-
-# Interactive (paste + Ctrl+D)
-vibeguard diagnose
-```
-
-### `vibeguard compress [PATH] [-o OUTPUT]`
-Produces a single `COMPRESSED_CONTEXT.txt` file optimized for AI context windows:
-- Strips Python docstrings and comments
-- Strips JS/TS block and inline comments
-- Collapses excessive blank lines
-- Truncates base64/long string literals
-- Reports per-file token savings
-
-### `vibeguard score [PATH]`
-Scores your project on a **1–10,000 point scale** across 7 dimensions:
-
-| Dimension | Max Points |
-|-----------|-----------|
-| Documentation Coverage | 2,000 |
-| TODO Density (inverted) | 2,000 |
-| Import Health | 1,500 |
-| Function Complexity | 1,500 |
-| Test Coverage | 1,500 |
-| Code Organization | 1,000 |
-| Entry Point Clarity | 500 |
-| **Total** | **10,000** |
-
----
-
-## 🧠 The Philosophy
-
-Modern vibe coding with AI is fast — but it creates **three hidden failure modes**:
-
-1. **Lost context** — AI forgets your project structure mid-session
-2. **Silent regressions** — AI deletes or renames things that other files depend on
-3. **Token waste** — You're burning 40-70% of your context window on comments and whitespace
-
-VibeGuard solves all three.
-
----
-
-## 📁 Project Structure
-
-```
-vibeguard/
-├── vibeguard.py              ← Main CLI entry point
-├── core/
-│   ├── memory_engine.py      ← Codebase scanner → PROJECT_MEMORY.md
-│   ├── error_detective.py    ← Error diagnosis engine
-│   ├── change_guardian.py    ← Regression detector
-│   ├── context_compressor.py ← Token optimizer
-│   ├── regression_tracker.py ← Health scorer (1-10,000)
-│   └── initializer.py        ← Project init + .cursorrules generator
-├── requirements.txt
-├── .env.example
-└── README.md
-```
-
----
-
-## 📦 Requirements
-
-```
-click>=8.1.0
-rich>=13.0.0
-colorama>=0.4.6
-watchdog>=3.0.0
-python-dotenv>=1.0.0
-gitpython>=3.1.0
-```
-
-Python 3.10+ required.
-
----
-
-## 🔧 Advanced Usage
-
-### Run against a specific project
-```bash
-python vibeguard.py scan /path/to/my-project
-python vibeguard.py score /path/to/my-project
-```
-
-### Diagnose from a log file
-```bash
-# Save your terminal output to a file, then analyze it
-python vibeguard.py diagnose -f error_output.log /path/to/my-project
-```
-
-### Compress and copy to clipboard (Windows)
-```bash
-python vibeguard.py compress && type COMPRESSED_CONTEXT.txt | clip
-```
-
----
-
-## 🤝 Contributing
-
-VibeGuard is built to be extended. Each core module is independent and testable. To add a new error pattern, edit the `ERROR_PATTERNS` list in `core/error_detective.py`.
-
----
-
-*Built with ❤️ to make vibe coding safer.*
+<div align="center">
+<i>Built to make AI coding autonomous, safe, and free.</i>
+</div>
