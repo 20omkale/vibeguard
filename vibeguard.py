@@ -11,6 +11,7 @@ Usage:
     python vibeguard.py compress   -- Compress codebase for AI context windows
     python vibeguard.py score      -- Health score (1-10,000)
     python vibeguard.py status     -- Quick project status overview
+    python vibeguard.py build      -- Build project from prompt
 """
 
 import sys
@@ -20,6 +21,13 @@ from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
+from core.memory_engine import run_scan
+from core.change_guardian import run_guard
+from core.error_detective import run_diagnose
+from core.context_compressor import run_compress
+from core.regression_tracker import run_score
+from core.initializer import run_init
+from core.autonomous_agent import run_build
 
 # Force UTF-8 output on Windows to support box-drawing and emoji characters
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -59,7 +67,6 @@ def init(path):
       • .vibeguard/stack.json  — Detected stack config
     """
     console.print(BANNER)
-    from core.initializer import run_init
     run_init(path)
 
 
@@ -78,7 +85,6 @@ def scan(path):
       • Language breakdown stats
     """
     console.print(BANNER)
-    from core.memory_engine import run_scan
     run_scan(path)
 
 
@@ -95,7 +101,6 @@ def guard(path):
     Generates AI safety prompts for high-severity findings.
     """
     console.print(BANNER)
-    from core.change_guardian import run_guard
     run_guard(path)
 
 
@@ -119,8 +124,6 @@ def diagnose(error, error_file, path):
       vibeguard diagnose   (interactive — paste error then Ctrl+D)
     """
     console.print(BANNER)
-    from core.error_detective import run_diagnose
-
     if error_file:
         error_text = Path(error_file).read_text(encoding="utf-8")
     elif error:
@@ -159,7 +162,6 @@ def compress(path, output):
     Outputs a single COMPRESSED_CONTEXT.txt file ready to paste into your AI.
     """
     console.print(BANNER)
-    from core.context_compressor import run_compress
     run_compress(path, output)
 
 
@@ -181,7 +183,6 @@ def score(path):
       • Entry point clarity        (500 pts)
     """
     console.print(BANNER)
-    from core.regression_tracker import run_score
     run_score(path)
 
 
@@ -221,6 +222,18 @@ def status(path):
     console.print()
     from core.regression_tracker import run_score
     run_score(path)
+
+
+@cli.command()
+@click.argument("prompt", type=str)
+@click.option("--target-dir", type=click.Path(file_okay=False, dir_okay=True), default=".", help="Target directory for the project")
+def build(prompt: str, target_dir: str):
+    """
+    [AUTONOMOUS] Build an entire project from a single prompt.
+    Example: vibeguard build "Create a real estate landing page in Next.js"
+    """
+    console.print(BANNER)
+    run_build(prompt, target_dir)
 
 
 # ─── Entry point ───────────────────────────────────────────────────────────────
