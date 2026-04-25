@@ -130,20 +130,27 @@ def run_build(prompt: str, target_dir: str = None) -> None:
 
     baseline = ProjectSnapshot(root)
 
-    # 2. Coding Phase
-    console.print("\n[bold yellow]💻 Phase 2: Autonomous Coding & Self-Healing[/bold yellow]")
+    # 2. Coding Phase (CONCURRENT GENERATION HACK)
+    console.print("\n[bold yellow]💻 Phase 2: Autonomous Concurrent Coding & Self-Healing[/bold yellow]")
+    console.print(f"[dim]Generating {len(architecture['files'])} files simultaneously to maximize speed...[/dim]")
     
-    for file_path_str, description in architecture["files"].items():
+    import concurrent.futures
+
+    def generate_file(file_info):
+        file_path_str, description = file_info
         file_path = root / file_path_str
-        console.print(f"  Writing [cyan]{file_path_str}[/cyan]...")
+        console.print(f"  [cyan]>[/cyan] Started [cyan]{file_path_str}[/cyan]")
         
-        with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
-            progress.add_task(f"Generating and verifying code for {file_path.name}...", start=True)
-            code_content = write_code_with_self_healing(client, model, prompt, file_path_str, description)
+        # We don't use rich.progress inside threads as it can corrupt the terminal output
+        code_content = write_code_with_self_healing(client, model, prompt, file_path_str, description)
         
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_text(code_content, encoding="utf-8")
-        console.print(f"    [green]✓ Done[/green]")
+        console.print(f"    [green]✓ Finished[/green] {file_path_str}")
+
+    # Fire all file generations at once!
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(generate_file, architecture["files"].items())
 
     # 3. Guardrail & Memory Phase
     console.print("\n[bold yellow]🛡️  Phase 3: Guardrail Check[/bold yellow]")

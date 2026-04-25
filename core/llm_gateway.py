@@ -4,7 +4,6 @@ Routes requests to Premium Cloud APIs (OpenAI) or Free Local Models (Ollama).
 """
 
 import os
-from openai import OpenAI
 from rich.console import Console
 
 console = Console()
@@ -14,6 +13,7 @@ def get_llm_client():
     Returns an configured OpenAI-compatible client and the model name to use.
     Auto-detects API keys. Falls back to Ollama.
     """
+    from openai import OpenAI
     openai_key = os.getenv("OPENAI_API_KEY")
     
     # Engine 1: Premium Cloud Engine

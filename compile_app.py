@@ -41,12 +41,20 @@ def run_compiler():
         "--hidden-import", "rich",
         "--hidden-import", "click",
         "--hidden-import", "openai",
+        # Aggressive Compiler Pruning (Senior Dev Hack for lightning fast boot)
         "--exclude-module", "pandas",
         "--exclude-module", "numpy",
         "--exclude-module", "torch",
         "--exclude-module", "scipy",
         "--exclude-module", "matplotlib",
         "--exclude-module", "tensorboard",
+        "--exclude-module", "tkinter",
+        "--exclude-module", "PyQt5",
+        "--exclude-module", "PyQt6",
+        "--exclude-module", "IPython",
+        "--exclude-module", "notebook",
+        "--exclude-module", "boto3",
+        "--exclude-module", "botocore",
         "vibeguard.py"
     ]
     
