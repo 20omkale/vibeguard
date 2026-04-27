@@ -187,6 +187,13 @@
         <div class="key-hint" id="apiKeyHint"></div>
         <input id="apiKeyInput" class="input" type="password" placeholder="Paste your API key here..."/>
       </div>
+      
+      <div style="margin-top:24px; padding-top:24px; border-top: 1px solid var(--border-glass)">
+        <label class="field-label">Global Access (Ngrok Authtoken)</label>
+        <div class="key-hint">Required for <code>vibeguard expose</code>. Get it at <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">ngrok.com</a></div>
+        <input id="ngrokTokenInput" class="input" type="password" placeholder="Paste your ngrok authtoken here..."/>
+      </div>
+
       <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:20px">Save &amp; Validate ✓</button>
       <div id="settings-msg" style="margin-top:12px"></div>
     </div>

@@ -61,10 +61,14 @@ def load_config() -> dict:
     """Load global VibeGuard config."""
     if CONFIG_FILE.exists():
         try:
-            return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+            data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+            # Ensure essential keys exist
+            if "api_keys" not in data: data["api_keys"] = {}
+            if "ngrok_token" not in data: data["ngrok_token"] = ""
+            return data
         except Exception:
             pass
-    return {}
+    return {"provider": "groq", "api_keys": {}, "ngrok_token": ""}
 
 
 def save_config(config: dict):

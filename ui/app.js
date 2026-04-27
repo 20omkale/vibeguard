@@ -303,10 +303,11 @@ function selectProvider(id, hint) {
 
 async function saveSettings() {
   const apiKey = document.getElementById('apiKeyInput').value;
+  const ngrokToken = document.getElementById('ngrokTokenInput').value;
   const msg = document.getElementById('settings-msg');
   
   if (selProvider !== 'ollama' && (!apiKey || apiKey === '********')) {
-    if(apiKey !== '********') {
+    if(apiKey !== '********' && selProvider) {
       msg.innerHTML = '<span style="color:var(--danger)">Please enter an API key</span>';
       return;
     }
@@ -321,7 +322,8 @@ async function saveSettings() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         provider: selProvider,
-        api_key: apiKey === '********' ? '' : apiKey
+        api_key: apiKey === '********' ? '' : apiKey,
+        ngrok_token: ngrokToken === '********' ? '' : ngrokToken
       })
     });
     const data = await res.json();

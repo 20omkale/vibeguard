@@ -197,6 +197,16 @@ def expose(port):
     """
     console.print(BANNER)
     from pyngrok import ngrok
+    from core.config_manager import load_config
+    
+    config = load_config()
+    token = config.get("ngrok_token", "")
+    
+    if token:
+        ngrok.set_auth_token(token)
+    else:
+        console.print("[yellow]⚠️  No ngrok authtoken found in config.[/yellow]")
+        console.print("[dim]If connection fails, set your token in the Settings tab of the Dashboard.[/dim]\n")
     
     console.print(f"[bold cyan]Exposing local dashboard to the Global Web...[/bold cyan]")
     try:
