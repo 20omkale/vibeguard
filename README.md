@@ -11,9 +11,18 @@
 [![Anthropic](https://img.shields.io/badge/Anthropic-Compatible-C9A84C.svg)](https://anthropic.com)
 [![Ollama](https://img.shields.io/badge/Ollama-Offline%20Mode-white.svg)](https://ollama.com)
 
-**Build. Guard. Debug. Fix. Ship.**
+*The end-to-end autonomous software factory with a beautiful Gen-Z Dashboard.*
 
-*The end-to-end autonomous software factory with a beautiful Web Dashboard.*
+---
+
+### 🌐 Global Demo Feature
+You can now expose your local VibeGuard dashboard to the entire world with one command:
+```bash
+python vibeguard.py expose
+```
+This gives you a secure global URL (e.g., `https://your-app.ngrok-free.app`) that you can share with clients or recruiters to show off your AI factory in real-time.
+
+---
 
 </div>
 
@@ -54,7 +63,10 @@ VibeGuard is no longer just a command-line tool. It now features a **professiona
 ### Problem 4: "I don't know how to prompt the AI to build what I actually want"
 → **Genesis** generates ready-to-paste prompts specifically for your project — not generic, but tailored with your tech stack, features, and constraints.
 
-### Problem 5: "Every AI has a different API key setup — I don't know how to use it"
+### Problem 5: "I have an existing project but want the AI to finish it autonomously while I sleep"
+→ **Autonomous Upgrade Engine** recursively plans and codes until your production goal is reached. It reads your codebase (e.g., your Carbon Platform), identifies what's missing, and builds it end-to-end.
+
+### Problem 6: "Every AI has a different API key setup — I don't know how to use it"
 → **One-time wizard** walks anyone through setup in 60 seconds. Groq is **100% free** with no credit card required.
 
 ---
@@ -84,7 +96,7 @@ VibeGuard supports 5 providers. The Dashboard guides you through setup:
 
 | Provider | Cost | Model | Get Key |
 |----------|------|-------|---------|
-| **Groq** ⭐ Recommended | **FREE** (14,400 req/day) | llama3-70b | [console.groq.com](https://console.groq.com) |
+| **Groq** ⭐ Recommended | **FREE** (14,400 req/day) | llama-3.3-70b-versatile | [console.groq.com](https://console.groq.com) |
 | **Google Gemini** | **FREE** (generous quota) | gemini-1.5-flash | [aistudio.google.com](https://aistudio.google.com) |
 | **OpenAI** | Paid | gpt-4o | [platform.openai.com](https://platform.openai.com) |
 | **Anthropic** | Paid | claude-3-5-sonnet | [console.anthropic.com](https://console.anthropic.com) |
@@ -111,6 +123,13 @@ Rough idea → 7 professional documents in one shot:
 3. **Code** — Generates all files concurrently with self-healing syntax checks
 4. **Install** — Runs `npm install` / `pip install` automatically
 5. **Guard** — Checks for regressions and generates `PROJECT_MEMORY.md`
+
+### 🚀 Autonomous Upgrade ("Sleep & Build")
+Give VibeGuard any existing project folder and a goal:
+1. **Recursive Scan** — Understands your current tech stack and logic.
+2. **Infinite Loop** — Plans the next step, writes the code, and verifies it.
+3. **Self-Healing** — Automatically fixes syntax and runtime errors it creates.
+4. **Goal Achievement** — Stops only when the production-level goal is met.
 
 ### 🛡️ Session Protector
 The #1 vibe coding feature. Snapshots your code before an AI session, compares after.
