@@ -24,7 +24,7 @@ PROVIDERS = {
         "desc": "llama3-70b on Groq Cloud. 14,400 free requests/day.",
         "url": "https://console.groq.com (free signup, 30 seconds)",
         "env_key": "GROQ_API_KEY",
-        "model": "llama3-70b-8192",
+        "model": "llama-3.3-70b-versatile",
     },
     "gemini": {
         "name": "Google Gemini (FREE tier available)",
