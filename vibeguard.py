@@ -5,16 +5,18 @@ VibeGuard — AI-Native Developer Platform
 Build. Guard. Debug. Fix. End-to-end.
 
 Usage:
-    python vibeguard.py          -- Interactive mode (no commands needed!)
-    python vibeguard.py config   -- Setup API keys (first-time wizard)
-    python vibeguard.py build    -- Build a project from your idea
-    python vibeguard.py diagnose -- Paste an error, get the fix
-    python vibeguard.py init     -- Add VibeGuard to an existing project
-    python vibeguard.py scan     -- Index codebase → PROJECT_MEMORY.md
-    python vibeguard.py guard    -- Watch for regressions
-    python vibeguard.py compress -- Compress codebase for AI context windows
-    python vibeguard.py score    -- Health score (1-10,000)
-    python vibeguard.py status   -- Quick project status
+    python vibeguard.py           -- Interactive mode (no commands needed!)
+    python vibeguard.py config    -- Setup API keys (first-time wizard)
+    python vibeguard.py genesis   -- Turn a rough idea into a full project blueprint
+    python vibeguard.py build     -- Build a project from your idea
+    python vibeguard.py protect   -- Protect your session from AI code removal
+    python vibeguard.py diagnose  -- Paste an error, get the fix
+    python vibeguard.py init      -- Add VibeGuard to an existing project
+    python vibeguard.py scan      -- Index codebase → PROJECT_MEMORY.md
+    python vibeguard.py guard     -- Watch for regressions
+    python vibeguard.py compress  -- Compress codebase for AI context windows
+    python vibeguard.py score     -- Health score (1-10,000)
+    python vibeguard.py status    -- Quick project status
 """
 
 import sys
@@ -81,6 +83,38 @@ def config():
     run_config_command()
 
 
+# ─── genesis ──────────────────────────────────────────────────────────────────
+
+@cli.command()
+@click.argument("idea", type=str, required=False)
+@click.option("--output", "-o", default=".", help="Where to save the blueprint docs")
+def genesis(idea, output):
+    """Turn a rough idea into a complete project blueprint.
+
+    Generates: PRD, Architecture, Database Schema, API Spec,
+    Development Plan, AI Prompts, and .cursorrules — all in one go.
+
+    \b
+    Examples:
+      vibeguard genesis "a food delivery app like Swiggy"
+      vibeguard genesis "a SaaS tool for invoice management"
+      vibeguard genesis  (interactive — type your idea)
+    """
+    console.print(BANNER)
+    _check_first_run()
+
+    if not idea:
+        console.print("\n[bold cyan]Describe your project idea.[/bold cyan]")
+        console.print("[dim]Be as rough or detailed as you want. I'll ask clarifying questions.[/dim]\n")
+        idea = Prompt.ask("[bold white]Your idea[/bold white]")
+        if not idea.strip():
+            console.print("[yellow]No idea provided.[/yellow]")
+            return
+
+    from core.project_genesis import run_genesis
+    run_genesis(idea.strip(), output)
+
+
 # ─── build ─────────────────────────────────────────────────────────────────────
 
 @cli.command()
@@ -110,6 +144,44 @@ def build(prompt, target_dir):
 
     from core.autonomous_agent import run_build
     run_build(prompt.strip(), target_dir)
+
+
+# ─── protect ──────────────────────────────────────────────────────────────────
+
+@cli.command()
+@click.argument("path", default=".", type=click.Path(exists=True))
+@click.option("--before", "mode", flag_value="before", default=True,
+              help="Take a snapshot BEFORE your AI session (default)")
+@click.option("--after", "mode", flag_value="after",
+              help="Compare AFTER your AI session to find deleted code")
+@click.option("--watch", "mode", flag_value="watch",
+              help="Continuous watch mode — alerts when code is removed")
+def protect(path, mode):
+    """Protect your session from AI code removal.
+
+    The #1 vibe coding problem: AI deletes your functions without telling you.
+    VibeGuard tracks every function, class, and API route.
+
+    \b
+    Workflow:
+      vibeguard protect --before    (before your AI session)
+      ... do your AI coding ...
+      vibeguard protect --after     (after — see what was deleted)
+
+    \b
+    Examples:
+      vibeguard protect --before
+      vibeguard protect --after
+      vibeguard protect --watch     (real-time monitoring)
+    """
+    console.print(BANNER)
+    from core.session_protector import run_protect_before, run_protect_after, run_protect_watch
+    if mode == "before":
+        run_protect_before(path)
+    elif mode == "after":
+        run_protect_after(path)
+    elif mode == "watch":
+        run_protect_watch(path)
 
 
 # ─── diagnose ──────────────────────────────────────────────────────────────────
@@ -295,38 +367,59 @@ def _interactive_mode():
 
     # Main menu
     console.print("[bold white]What would you like to do?[/bold white]\n")
-    console.print("  [bold cyan][1][/bold cyan]  🏗️  [bold]Build a new project[/bold]")
-    console.print("       [dim]Describe your idea → agent plans, codes, installs everything[/dim]")
+    console.print("  [bold cyan][1][/bold cyan]  💡 [bold]Turn idea into project blueprint[/bold] (Genesis)")
+    console.print("       [dim]Rough idea → PRD + Architecture + API Spec + AI Prompts[/dim]")
     console.print()
-    console.print("  [bold cyan][2][/bold cyan]  🐛  [bold]Debug / Fix an error[/bold]")
-    console.print("       [dim]Paste your error → get the exact root cause + fix[/dim]")
+    console.print("  [bold cyan][2][/bold cyan]  🏗️  [bold]Build a project from scratch[/bold]")
+    console.print("       [dim]Describe idea → agent codes all files + installs dependencies[/dim]")
     console.print()
-    console.print("  [bold cyan][3][/bold cyan]  🛡️  [bold]Protect an existing project[/bold]")
-    console.print("       [dim]Initialize memory, guardrails, and regression tracking[/dim]")
+    console.print("  [bold cyan][3][/bold cyan]  🛡️  [bold]Protect my session[/bold] (before AI coding)")
+    console.print("       [dim]Snapshot your code → AI can't silently delete your functions[/dim]")
     console.print()
-    console.print("  [bold cyan][4][/bold cyan]  📊  [bold]Score project health[/bold]")
-    console.print("       [dim]Get a 1-10,000 quality score across 7 dimensions[/dim]")
+    console.print("  [bold cyan][4][/bold cyan]  🔍 [bold]Check what AI changed[/bold] (after AI coding)")
+    console.print("       [dim]See exactly what was deleted/modified → restore with one command[/dim]")
     console.print()
-    console.print("  [bold cyan][5][/bold cyan]  ⚙️  [bold]Change AI provider / API keys[/bold]")
+    console.print("  [bold cyan][5][/bold cyan]  🐛  [bold]Debug / Fix an error[/bold]")
+    console.print("       [dim]Paste your error → root cause + exact fix + AI prompt[/dim]")
+    console.print()
+    console.print("  [bold cyan][6][/bold cyan]  📊  [bold]Score project health[/bold]")
+    console.print("       [dim]1-10,000 quality score across 7 dimensions[/dim]")
+    console.print()
+    console.print("  [bold cyan][7][/bold cyan]  ⚙️  [bold]Setup AI provider / API keys[/bold]")
     console.print()
 
     try:
-        choice = Prompt.ask("\n[bold white]Select[/bold white]", choices=["1", "2", "3", "4", "5"], default="1")
+        choice = Prompt.ask("\n[bold white]Select[/bold white]", choices=["1","2","3","4","5","6","7"], default="1")
 
         if choice == "1":
+            console.print("\n[bold cyan]Describe your project idea.[/bold cyan]")
+            console.print("[dim]Example: 'a food delivery app like Swiggy', 'invoice SaaS for freelancers'[/dim]\n")
+            idea = Prompt.ask("[bold white]Your idea[/bold white]")
+            if idea.strip():
+                from core.project_genesis import run_genesis
+                run_genesis(idea.strip(), ".")
+
+        elif choice == "2":
             console.print("\n[bold cyan]What would you like to build?[/bold cyan]")
             console.print("[dim]Examples: 'a todo app with login', 'a Discord bot', 'a FastAPI backend with auth'[/dim]\n")
             prompt = Prompt.ask("[bold white]Describe your idea[/bold white]")
             if prompt.strip():
-                target = Prompt.ask(
-                    "\n[bold white]Where should I create it?[/bold white]",
-                    default=".",
-                )
+                target = Prompt.ask("\n[bold white]Where should I create it?[/bold white]", default=".")
                 console.print()
                 from core.autonomous_agent import run_build
                 run_build(prompt.strip(), target.strip() or ".")
 
-        elif choice == "2":
+        elif choice == "3":
+            path = Prompt.ask("\n[bold white]Project path[/bold white]", default=".")
+            from core.session_protector import run_protect_before
+            run_protect_before(path)
+
+        elif choice == "4":
+            path = Prompt.ask("\n[bold white]Project path[/bold white]", default=".")
+            from core.session_protector import run_protect_after
+            run_protect_after(path)
+
+        elif choice == "5":
             console.print("\n[bold cyan]Paste your error or stack trace.[/bold cyan]")
             console.print("[dim]Press Enter twice when done.[/dim]\n")
             lines = []
@@ -343,33 +436,18 @@ def _interactive_mode():
                     lines.append(line)
                 except EOFError:
                     break
-
             error_text = "\n".join(lines).strip()
             if error_text:
-                console.print("\n[dim]Enter the path to your project (or press Enter for current folder):[/dim]")
                 path = Prompt.ask("[bold white]Project path[/bold white]", default=".")
                 from core.error_detective import run_diagnose
                 run_diagnose(error_text, path)
 
-        elif choice == "3":
-            path = Prompt.ask(
-                "\n[bold white]Enter path to your project[/bold white]",
-                default="."
-            )
-            from core.initializer import run_init
-            from core.memory_engine import run_scan
-            run_init(path)
-            run_scan(path)
-
-        elif choice == "4":
-            path = Prompt.ask(
-                "\n[bold white]Enter path to your project[/bold white]",
-                default="."
-            )
+        elif choice == "6":
+            path = Prompt.ask("\n[bold white]Project path[/bold white]", default=".")
             from core.regression_tracker import run_score
             run_score(path)
 
-        elif choice == "5":
+        elif choice == "7":
             from core.config_manager import run_config_command
             run_config_command()
 
