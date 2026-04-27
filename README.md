@@ -13,9 +13,19 @@
 
 **Build. Guard. Debug. Fix. Ship.**
 
-*From a rough idea to production-ready code — without losing a single line of work.*
+*The end-to-end autonomous software factory with a beautiful Web Dashboard.*
 
 </div>
+
+---
+
+## 🚀 The Web Dashboard Experience
+
+VibeGuard is no longer just a command-line tool. It now features a **professional Web UI** that launches automatically. 
+
+- **For Clients:** Double-click `VibeGuard.exe` and a sleek dashboard opens in your browser.
+- **For Developers:** Complete control via the dashboard or the powerful CLI.
+- **Real-time Streaming:** Watch the agent architect and code your project in real-time.
 
 ---
 
@@ -59,10 +69,7 @@ cd vibeguard
 # Install dependencies
 pip install -r requirements.txt
 
-# First-time setup (60 seconds, Groq is free)
-python vibeguard.py config
-
-# Or just run — the wizard appears automatically
+# Launch the Dashboard
 python vibeguard.py
 ```
 
@@ -73,7 +80,7 @@ python vibeguard.py
 
 ## 🧠 AI Providers — Pick One, Set It Once
 
-VibeGuard supports 5 providers. The config wizard guides you through setup:
+VibeGuard supports 5 providers. The Dashboard guides you through setup:
 
 | Provider | Cost | Model | Get Key |
 |----------|------|-------|---------|
@@ -83,19 +90,12 @@ VibeGuard supports 5 providers. The config wizard guides you through setup:
 | **Anthropic** | Paid | claude-3-5-sonnet | [console.anthropic.com](https://console.anthropic.com) |
 | **Ollama** | Free, offline | llama3 | [ollama.com](https://ollama.com) |
 
-Config is saved globally in `~/.vibeguard/config.json` — set once, works everywhere.
-
 ---
 
-## 🚀 Commands
+## 🚀 Dashboard Modules
 
-### `vibeguard genesis` — Blueprint from a Rough Idea
-```bash
-python vibeguard.py genesis "a food delivery app like Swiggy"
-python vibeguard.py genesis "a SaaS tool for invoice management"
-python vibeguard.py genesis  # interactive mode
-```
-Generates 7 documents in one shot:
+### 💡 Project Genesis
+Rough idea → 7 professional documents in one shot:
 - `PRD.md` — Features, user stories, success KPIs
 - `ARCHITECTURE.md` — Tech stack decisions + Mermaid diagrams  
 - `DATABASE_SCHEMA.md` — Full schema with indexes and relationships
@@ -104,14 +104,7 @@ Generates 7 documents in one shot:
 - `AI_PROMPTS.md` — Perfect ready-to-paste prompts for Cursor/Claude/ChatGPT
 - `.cursorrules` — AI behavior rules specific to YOUR project
 
----
-
-### `vibeguard build` — Autonomous Code Generation
-```bash
-python vibeguard.py build "a todo app with React and FastAPI"
-python vibeguard.py build "a Discord bot that tracks stock prices"
-python vibeguard.py build  # interactive mode
-```
+### 🏗️ Autonomous Build
 5-phase pipeline:
 1. **Requirements** — Asks 3-5 clarifying questions
 2. **Architecture** — Plans all files, shows you the plan, asks confirmation
@@ -119,51 +112,10 @@ python vibeguard.py build  # interactive mode
 4. **Install** — Runs `npm install` / `pip install` automatically
 5. **Guard** — Checks for regressions and generates `PROJECT_MEMORY.md`
 
----
-
-### `vibeguard protect` — Session Protection (The #1 Vibe Coder Feature)
-```bash
-# Step 1: BEFORE your AI coding session
-python vibeguard.py protect --before
-
-# ... use Cursor, ChatGPT, Claude as usual ...
-
-# Step 2: AFTER your AI session
-python vibeguard.py protect --after
-
-# Or: continuous real-time monitoring
-python vibeguard.py protect --watch
-```
-
-Tracks every function, class, API route, and export. If anything was deleted, shows you:
-- Exactly which functions disappeared (with original line numbers)
-- Which API routes were removed
-- Which exports vanished
-- **Severity level**: CLEAN / LOW / MEDIUM / HIGH
-- A ready-to-paste **restore prompt** to recover deleted code
-
----
-
-### `vibeguard diagnose` — Error Detective
-```bash
-python vibeguard.py diagnose -e "TypeError: Cannot read properties of undefined"
-python vibeguard.py diagnose -f error.log
-python vibeguard.py diagnose  # paste error interactively
-```
-Reads your full codebase + error → returns root cause + exact fix + AI prompt.
-
----
-
-### Other Commands
-```bash
-python vibeguard.py init      # Initialize VibeGuard in an existing project
-python vibeguard.py scan      # Generate/update PROJECT_MEMORY.md
-python vibeguard.py guard     # Watch for regressions between commits
-python vibeguard.py compress  # Compress codebase (saves ~40-70% tokens)
-python vibeguard.py score     # Health score (1-10,000 scale)
-python vibeguard.py status    # Quick status of all VibeGuard systems
-python vibeguard.py config    # Change AI provider or update API keys
-```
+### 🛡️ Session Protector
+The #1 vibe coding feature. Snapshots your code before an AI session, compares after.
+- Detects deleted functions, routes, and exports.
+- Generates a **restore prompt** to recover lost code instantly.
 
 ---
 
@@ -171,65 +123,21 @@ python vibeguard.py config    # Change AI provider or update API keys
 
 ```mermaid
 graph TD
-    A[User Idea / Rough Brief] --> B[Genesis Engine]
-    B --> C[PRD + Architecture + Schema + API + Prompts]
-    C --> D[Build Engine]
+    A[User Idea / Rough Brief] --> B[Web Dashboard]
+    B --> C[Flask SSE Backend]
+    C --> D[Genesis Engine]
+    C --> E[Build Engine]
+    C --> F[Session Protector]
     
-    D --> E{LLM Gateway}
-    E --> F[Groq FREE]
-    E --> G[Gemini FREE]
-    E --> H[OpenAI]
-    E --> I[Anthropic]
-    E --> J[Ollama Offline]
+    D & E & F --> G{LLM Gateway}
+    G --> H[Groq / Gemini / OpenAI / Anthropic / Ollama]
     
-    F & G & H & I & J --> K[Requirements Gathering]
-    K --> L[Architecture Planning]
-    L --> M[Concurrent Code Generation]
-    M --> N[Self-Healing Loop]
-    N -->|Syntax Error| M
-    N -->|Pass| O[Dependency Install]
-    O --> P[Session Protection Snapshot]
-    P --> Q[PROJECT_MEMORY.md]
-    Q --> R[Telemetry Flywheel]
-    R -->|Learns from every build| K
-```
-
----
-
-## 🧬 Self-Improving Flywheel
-
-Every build teaches VibeGuard to build better:
-
-1. Build starts → reads past learnings from `~/.vibeguard/global_learnings.json`
-2. Agent incorporates lessons into its system prompt
-3. Build completes → outcome (success/failure + error logs) saved back
-4. Next build for similar projects uses this knowledge
-
-The more you use it, the smarter it gets for your specific stack.
-
----
-
-## 📁 Project Structure
-
-```
-vibeguard/
-├── vibeguard.py              # CLI entry point (11 commands)
-├── requirements.txt
-├── compile_app.py            # Build standalone .exe
-│
-└── core/
-    ├── config_manager.py     # First-run wizard, API key storage
-    ├── llm_gateway.py        # Universal 5-provider LLM router
-    ├── project_genesis.py    # Blueprint from rough idea (Genesis Engine)
-    ├── autonomous_agent.py   # 5-phase build pipeline
-    ├── session_protector.py  # AI code deletion protection
-    ├── error_detective.py    # Root cause analysis
-    ├── initializer.py        # Stack detection + .cursorrules generator
-    ├── memory_engine.py      # PROJECT_MEMORY.md generation
-    ├── change_guardian.py    # Regression detection
-    ├── context_compressor.py # Token compression
-    ├── regression_tracker.py # 1-10,000 health scoring
-    └── telemetry.py          # Build outcome logging
+    E --> I[Requirements Gathering]
+    I --> J[Architecture Planning]
+    J --> K[Concurrent Code Generation]
+    K --> L[Self-Healing Loop]
+    L --> M[Dependency Install]
+    M --> N[PROJECT_MEMORY.md]
 ```
 
 ---
@@ -238,47 +146,12 @@ vibeguard/
 
 | Feature | ChatGPT / Claude | Cursor | GitHub Copilot | **VibeGuard** |
 |---------|-----------------|--------|----------------|---------------|
+| **Visual Dashboard UI** | ❌ | ❌ | ❌ | ✅ |
 | Generates PRD from rough idea | ❌ | ❌ | ❌ | ✅ |
 | Detects AI-deleted code | ❌ | ❌ | ❌ | ✅ |
-| Tracks every function/route | ❌ | ❌ | ❌ | ✅ |
 | Builds entire project end-to-end | ❌ | ❌ | ❌ | ✅ |
-| Explains errors with codebase context | Partially | Partially | ❌ | ✅ |
 | Works 100% free (no credit card) | ❌ | ❌ | ❌ | ✅ |
 | Self-improves from past builds | ❌ | ❌ | ❌ | ✅ |
-| Generates perfect AI prompts | ❌ | ❌ | ❌ | ✅ |
-| Standalone .exe (no Python needed) | ❌ | ❌ | ❌ | ✅ |
-
----
-
-## 🏢 Subscription Tiers (Coming Soon)
-
-| | **Free** | **Pro** ($9/mo) | **Team** ($29/mo) |
-|-|----------|----------------|------------------|
-| Genesis blueprints | 3/month | Unlimited | Unlimited |
-| Build projects | 5/month | Unlimited | Unlimited |
-| Session protection | ✅ | ✅ | ✅ |
-| Error diagnosis | 10/month | Unlimited | Unlimited |
-| Global learnings (shared brain) | ❌ | ✅ | ✅ |
-| Priority support | ❌ | ❌ | ✅ |
-
-> Free tier is genuinely useful. Pro is cheaper than one hour of a freelancer's time.
-
----
-
-## 🛠️ Compile to Standalone .exe
-
-Distribute to non-technical clients — no Python installation required:
-
-```bash
-python compile_app.py
-# Output: dist/VibeGuard.exe
-```
-
-Client usage:
-```bash
-VibeGuard.exe genesis "build me an e-commerce site"
-VibeGuard.exe build "a REST API for a food ordering app"
-```
 
 ---
 
