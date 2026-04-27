@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VibeGuard — AI Developer Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-icon">🛡️</span>
+    <div><div class="logo-name">VibeGuard</div><div class="logo-sub">AI Dev Platform</div></div>
+  </div>
+  <nav class="nav">
+    <a class="nav-item active" data-page="home"     onclick="showPage('home')">🏠 Home</a>
+    <a class="nav-item"        data-page="genesis"  onclick="showPage('genesis')">💡 Genesis</a>
+    <a class="nav-item"        data-page="build"    onclick="showPage('build')">🏗️ Build</a>
+    <a class="nav-item"        data-page="protect"  onclick="showPage('protect')">🛡️ Protect</a>
+    <a class="nav-item"        data-page="diagnose" onclick="showPage('diagnose')">🐛 Diagnose</a>
+    <a class="nav-item"        data-page="settings" onclick="showPage('settings')">⚙️ Settings</a>
+  </nav>
+  <div class="sidebar-footer" id="providerBadge">Loading...</div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="page-header">
+      <h1>Welcome to VibeGuard</h1>
+      <p>Your AI senior developer — available 24/7. Pick what you need below.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="card card-highlight" onclick="showPage('genesis')">
+        <div class="card-icon">💡</div>
+        <div class="card-title">Project Genesis</div>
+        <div class="card-desc">Turn a rough idea into a full blueprint — PRD, architecture, database schema, API spec, and AI prompts.</div>
+        <div class="card-cta">Start Genesis →</div>
+      </div>
+      <div class="card" onclick="showPage('build')">
+        <div class="card-icon">🏗️</div>
+        <div class="card-title">Build a Project</div>
+        <div class="card-desc">Describe your idea. The agent writes every file, installs dependencies, and gets it running.</div>
+        <div class="card-cta">Start Building →</div>
+      </div>
+      <div class="card" onclick="showPage('protect')">
+        <div class="card-icon">🛡️</div>
+        <div class="card-title">Session Protect</div>
+        <div class="card-desc">Stop AI from silently deleting your functions. Snapshot before, compare after, restore in one click.</div>
+        <div class="card-cta">Protect Now →</div>
+      </div>
+      <div class="card" onclick="showPage('diagnose')">
+        <div class="card-icon">🐛</div>
+        <div class="card-title">Debug an Error</div>
+        <div class="card-desc">Paste any error or stack trace. Get the root cause, the fix, and a prompt to paste into your AI tool.</div>
+        <div class="card-cta">Debug Now →</div>
+      </div>
+    </div>
+    <div class="info-row" id="homeStatus"></div>
+  </div>
+
+  <!-- GENESIS -->
+  <div id="page-genesis" class="page">
+    <div class="page-header">
+      <h1>💡 Project Genesis</h1>
+      <p>From rough idea to complete project blueprint. No Figma needed. No docs needed.</p>
+    </div>
+    <div class="panel">
+      <div id="genesis-step1">
+        <label class="field-label">Describe your idea</label>
+        <textarea id="genesisIdea" class="textarea" rows="3" placeholder="e.g. a food delivery app like Swiggy, a SaaS invoice tool for freelancers, a Discord bot that tracks crypto prices..."></textarea>
+        <button class="btn btn-primary" onclick="genesisGetQuestions()">Continue →</button>
+      </div>
+      <div id="genesis-step2" style="display:none">
+        <div class="field-label" style="margin-bottom:12px">A few quick questions so I build exactly what you need:</div>
+        <div id="genesisQuestions"></div>
+        <button class="btn btn-primary" onclick="genesisRun()">Generate Blueprint 🚀</button>
+        <button class="btn btn-ghost" onclick="genesisSkip()">Skip questions, just generate</button>
+      </div>
+    </div>
+    <div id="genesis-output" class="terminal" style="display:none"></div>
+    <div id="genesis-result" class="result-box" style="display:none"></div>
+  </div>
+
+  <!-- BUILD -->
+  <div id="page-build" class="page">
+    <div class="page-header">
+      <h1>🏗️ Build a Project</h1>
+      <p>The agent plans, codes, and installs everything. You just describe what you want.</p>
+    </div>
+    <div class="panel">
+      <label class="field-label">What do you want to build?</label>
+      <textarea id="buildPrompt" class="textarea" rows="3" placeholder="e.g. a REST API for a blog with user authentication using FastAPI and PostgreSQL"></textarea>
+      <label class="field-label" style="margin-top:16px">Output folder (where to create the project)</label>
+      <input id="buildTarget" class="input" placeholder="Leave blank → creates in your home folder"/>
+      <button class="btn btn-primary" onclick="runBuild()">Build It 🚀</button>
+    </div>
+    <div id="build-output" class="terminal" style="display:none"></div>
+    <div id="build-result" class="result-box" style="display:none"></div>
+  </div>
+
+  <!-- PROTECT -->
+  <div id="page-protect" class="page">
+    <div class="page-header">
+      <h1>🛡️ Session Protection</h1>
+      <p>AI tools silently delete your code. VibeGuard tracks every function, class, and API route.</p>
+    </div>
+    <div class="how-it-works">
+      <div class="step-item"><div class="step-num">1</div><div><b>Before AI session</b><br/>Click "Take Snapshot" — VibeGuard records everything in your project</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-item"><div class="step-num">2</div><div><b>Do your AI coding</b><br/>Use Cursor, Claude, ChatGPT — do your work as normal</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-item"><div class="step-num">3</div><div><b>After AI session</b><br/>Click "Check Changes" — see exactly what was deleted</div></div>
+    </div>
+    <div class="panel">
+      <label class="field-label">Project folder path</label>
+      <input id="protectPath" class="input" placeholder="e.g. C:\Users\you\myproject  (leave blank for current folder)"/>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="protectBefore()">📸 Take Snapshot (Before)</button>
+        <button class="btn btn-warn"    onclick="protectAfter()">🔍 Check Changes (After)</button>
+      </div>
+    </div>
+    <div id="protect-output" class="terminal" style="display:none"></div>
+    <div id="protect-result" class="result-box" style="display:none"></div>
+  </div>
+
+  <!-- DIAGNOSE -->
+  <div id="page-diagnose" class="page">
+    <div class="page-header">
+      <h1>🐛 Error Diagnosis</h1>
+      <p>Paste any error or stack trace. Get the root cause and the exact fix.</p>
+    </div>
+    <div class="panel">
+      <label class="field-label">Paste your error / stack trace</label>
+      <textarea id="diagnoseError" class="textarea" rows="6" placeholder="Paste the full error message or stack trace here...&#10;&#10;Example:&#10;TypeError: Cannot read properties of undefined (reading 'map')&#10;    at ProductList (ProductList.jsx:24:18)"></textarea>
+      <label class="field-label" style="margin-top:16px">Project folder (optional — helps give better context)</label>
+      <input id="diagnosePath" class="input" placeholder="e.g. C:\Users\you\myproject"/>
+      <button class="btn btn-primary" onclick="runDiagnose()">Diagnose &amp; Fix 🔍</button>
+    </div>
+    <div id="diagnose-output" class="terminal" style="display:none"></div>
+    <div id="diagnose-result" class="result-box" style="display:none"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="page-settings" class="page">
+    <div class="page-header">
+      <h1>⚙️ Settings</h1>
+      <p>Choose your AI provider. Set it once — works everywhere.</p>
+    </div>
+    <div class="panel">
+      <label class="field-label">AI Provider</label>
+      <div class="provider-grid" id="providerGrid"></div>
+      <div id="apiKeySection" style="display:none;margin-top:20px">
+        <label class="field-label" id="apiKeyLabel">API Key</label>
+        <div class="key-hint" id="apiKeyHint"></div>
+        <input id="apiKeyInput" class="input" type="password" placeholder="Paste your API key here..."/>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:20px">Save &amp; Validate ✓</button>
+      <div id="settings-msg" style="margin-top:12px"></div>
+    </div>
+    <div class="providers-info">
+      <h3 style="margin-bottom:16px;color:var(--text-secondary)">How to get a free key</h3>
+      <div class="provider-steps">
+        <div class="pstep"><span class="badge-free">FREE</span><b>Groq</b> — Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a> → Sign up → API Keys → Create Key. Done in 30 seconds.</div>
+        <div class="pstep"><span class="badge-free">FREE</span><b>Gemini</b> — Go to <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> → Sign in with Google → Get API Key.</div>
+        <div class="pstep"><span class="badge-paid">PAID</span><b>OpenAI</b> — Go to <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> → API keys → Create.</div>
+        <div class="pstep"><span class="badge-paid">PAID</span><b>Anthropic</b> — Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.</div>
+        <div class="pstep"><span class="badge-offline">OFFLINE</span><b>Ollama</b> — Install from <a href="https://ollama.com" target="_blank">ollama.com</a> → run <code>ollama pull llama3</code>. No key needed.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

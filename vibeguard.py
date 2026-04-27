@@ -341,120 +341,26 @@ def status(path):
 
 def _interactive_mode():
     """
-    Full interactive TUI for users who run `python vibeguard.py` with no arguments.
-    Persona-aware: detects vibe coders vs real developers.
+    Full Web UI for users who run `python vibeguard.py` or double-click the .exe.
+    Launches a local Flask server and opens the browser.
     """
     console.print(BANNER)
-
-    # Check first-time setup
-    from core.config_manager import is_configured, run_first_time_wizard, load_config, PROVIDERS
-    config = load_config()
-    provider = config.get("provider", "")
-
-    if not is_configured():
-        console.print(Panel(
-            "[bold yellow]Welcome! Looks like this is your first time.[/bold yellow]\n\n"
-            "Let me set things up — it takes about 60 seconds.\n"
-            "[bold]Groq is completely free[/bold] — no credit card needed.",
-            border_style="yellow",
-            padding=(1, 2),
-        ))
-        run_first_time_wizard()
-        console.print()
-    else:
-        pname = PROVIDERS.get(provider, {}).get("name", provider)
-        console.print(f"[dim]  AI Provider: {pname}[/dim]\n")
-
-    # Main menu
-    console.print("[bold white]What would you like to do?[/bold white]\n")
-    console.print("  [bold cyan][1][/bold cyan]  💡 [bold]Turn idea into project blueprint[/bold] (Genesis)")
-    console.print("       [dim]Rough idea → PRD + Architecture + API Spec + AI Prompts[/dim]")
-    console.print()
-    console.print("  [bold cyan][2][/bold cyan]  🏗️  [bold]Build a project from scratch[/bold]")
-    console.print("       [dim]Describe idea → agent codes all files + installs dependencies[/dim]")
-    console.print()
-    console.print("  [bold cyan][3][/bold cyan]  🛡️  [bold]Protect my session[/bold] (before AI coding)")
-    console.print("       [dim]Snapshot your code → AI can't silently delete your functions[/dim]")
-    console.print()
-    console.print("  [bold cyan][4][/bold cyan]  🔍 [bold]Check what AI changed[/bold] (after AI coding)")
-    console.print("       [dim]See exactly what was deleted/modified → restore with one command[/dim]")
-    console.print()
-    console.print("  [bold cyan][5][/bold cyan]  🐛  [bold]Debug / Fix an error[/bold]")
-    console.print("       [dim]Paste your error → root cause + exact fix + AI prompt[/dim]")
-    console.print()
-    console.print("  [bold cyan][6][/bold cyan]  📊  [bold]Score project health[/bold]")
-    console.print("       [dim]1-10,000 quality score across 7 dimensions[/dim]")
-    console.print()
-    console.print("  [bold cyan][7][/bold cyan]  ⚙️  [bold]Setup AI provider / API keys[/bold]")
-    console.print()
+    console.print(Panel(
+        "[bold cyan]Launching VibeGuard Web Dashboard...[/bold cyan]\n\n"
+        "If your browser doesn't open automatically, go to:\n"
+        "[bold white]http://localhost:7456[/bold white]",
+        border_style="cyan",
+        padding=(1, 2),
+    ))
 
     try:
-        choice = Prompt.ask("\n[bold white]Select[/bold white]", choices=["1","2","3","4","5","6","7"], default="1")
-
-        if choice == "1":
-            console.print("\n[bold cyan]Describe your project idea.[/bold cyan]")
-            console.print("[dim]Example: 'a food delivery app like Swiggy', 'invoice SaaS for freelancers'[/dim]\n")
-            idea = Prompt.ask("[bold white]Your idea[/bold white]")
-            if idea.strip():
-                from core.project_genesis import run_genesis
-                run_genesis(idea.strip(), ".")
-
-        elif choice == "2":
-            console.print("\n[bold cyan]What would you like to build?[/bold cyan]")
-            console.print("[dim]Examples: 'a todo app with login', 'a Discord bot', 'a FastAPI backend with auth'[/dim]\n")
-            prompt = Prompt.ask("[bold white]Describe your idea[/bold white]")
-            if prompt.strip():
-                target = Prompt.ask("\n[bold white]Where should I create it?[/bold white]", default=".")
-                console.print()
-                from core.autonomous_agent import run_build
-                run_build(prompt.strip(), target.strip() or ".")
-
-        elif choice == "3":
-            path = Prompt.ask("\n[bold white]Project path[/bold white]", default=".")
-            from core.session_protector import run_protect_before
-            run_protect_before(path)
-
-        elif choice == "4":
-            path = Prompt.ask("\n[bold white]Project path[/bold white]", default=".")
-            from core.session_protector import run_protect_after
-            run_protect_after(path)
-
-        elif choice == "5":
-            console.print("\n[bold cyan]Paste your error or stack trace.[/bold cyan]")
-            console.print("[dim]Press Enter twice when done.[/dim]\n")
-            lines = []
-            empty_count = 0
-            while True:
-                try:
-                    line = input()
-                    if line == "":
-                        empty_count += 1
-                        if empty_count >= 2:
-                            break
-                    else:
-                        empty_count = 0
-                    lines.append(line)
-                except EOFError:
-                    break
-            error_text = "\n".join(lines).strip()
-            if error_text:
-                path = Prompt.ask("[bold white]Project path[/bold white]", default=".")
-                from core.error_detective import run_diagnose
-                run_diagnose(error_text, path)
-
-        elif choice == "6":
-            path = Prompt.ask("\n[bold white]Project path[/bold white]", default=".")
-            from core.regression_tracker import run_score
-            run_score(path)
-
-        elif choice == "7":
-            from core.config_manager import run_config_command
-            run_config_command()
-
+        from server import start_server
+        start_server(port=7456, open_browser=True)
     except KeyboardInterrupt:
-        console.print("\n\n[yellow]Goodbye! Run `python vibeguard.py` anytime.[/yellow]")
+        console.print("\n\n[yellow]Goodbye! Server stopped.[/yellow]")
     except Exception as e:
-        console.print(f"\n[red]Error: {e}[/red]")
+        console.print(f"\n[red]Error starting web dashboard: {e}[/red]")
+        console.print("[dim]You can still use the CLI commands. Run `python vibeguard.py --help`[/dim]")
 
     # Prevent terminal from closing when double-clicked as .exe
     if getattr(sys, "frozen", False):
