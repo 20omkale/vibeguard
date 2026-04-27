@@ -10,6 +10,7 @@ Usage:
     python vibeguard.py genesis   -- Turn a rough idea into a full project blueprint
     python vibeguard.py build     -- Build a project from your idea
     python vibeguard.py protect   -- Protect your session from AI code removal
+    python vibeguard.py expose    -- Generate a global secure URL for your dashboard
     python vibeguard.py diagnose  -- Paste an error, get the fix
     python vibeguard.py init      -- Add VibeGuard to an existing project
     python vibeguard.py scan      -- Index codebase → PROJECT_MEMORY.md
@@ -182,6 +183,48 @@ def protect(path, mode):
         run_protect_after(path)
     elif mode == "watch":
         run_protect_watch(path)
+
+
+# ─── expose ───────────────────────────────────────────────────────────────────
+
+@cli.command()
+@click.option("--port", "-p", default=7456, help="Port to expose")
+def expose(port):
+    """Generate a global secure URL for your dashboard instantly.
+    
+    Uses ngrok to create a secure tunnel. Perfect for sharing your 
+    dashboard with clients or collaborators anywhere in the world.
+    """
+    console.print(BANNER)
+    from pyngrok import ngrok
+    
+    console.print(f"[bold cyan]Exposing local dashboard to the Global Web...[/bold cyan]")
+    try:
+        # Open a HTTP tunnel on the specified port
+        public_url = ngrok.connect(port).public_url
+        console.print(Panel(
+            f"[bold green]✅ Dashboard is now LIVE globally![/bold green]\n\n"
+            f"[white]Global URL:[/white] [bold cyan]{public_url}[/bold cyan]\n"
+            f"[white]Local URL: [/white] [dim]http://localhost:{port}[/dim]\n\n"
+            f"[yellow]⚠️  Keep this terminal open to maintain the connection.[/yellow]",
+            border_style="green",
+            padding=(1, 2),
+        ))
+        
+        # Start server in the background
+        import threading
+        from server import start_server
+        server_thread = threading.Thread(target=start_server, kwargs={"port": port, "open_browser": False}, daemon=True)
+        server_thread.start()
+        
+        # Keep main thread alive
+        import time
+        while True:
+            time.sleep(1)
+            
+    except Exception as e:
+        console.print(f"[red]Error exposing dashboard: {e}[/red]")
+        console.print("[dim]Make sure you have an ngrok account if it requires an authtoken.[/dim]")
 
 
 # ─── diagnose ──────────────────────────────────────────────────────────────────

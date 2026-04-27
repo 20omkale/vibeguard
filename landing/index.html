@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeGuard — The Autonomous AI Software Factory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --primary: #00e5ff;
+            --primary-rgb: 0, 229, 255;
+            --text: #ffffff;
+            --text-dim: #94a3b8;
+            --accent: #7c3aed;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background Effects */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, rgba(0, 229, 255, 0.15), transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background: rgba(3, 3, 3, 0.5);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo { font-weight: 800; font-size: 24px; letter-spacing: -1px; }
+        .logo span { color: var(--primary); }
+
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-dim); font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 99px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary { 
+            background: var(--primary); 
+            color: #000; 
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0, 229, 255, 0.5); }
+
+        /* Hero Section */
+        .hero {
+            padding: 180px 5% 100px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 6px 16px;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        h1 { font-size: 72px; font-weight: 800; letter-spacing: -3px; line-height: 1.1; margin-bottom: 24px; }
+        h1 span { 
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p { font-size: 20px; color: var(--text-dim); margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; }
+
+        /* Mockup */
+        .mockup-container {
+            margin-top: 80px;
+            position: relative;
+            padding: 20px;
+            background: linear-gradient(180deg, var(--glass-border), transparent);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+        }
+
+        .mockup {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            display: block;
+        }
+
+        /* Features */
+        .features { padding: 100px 5%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        .feature-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .f-icon { font-size: 40px; margin-bottom: 24px; }
+        .feature-card h3 { font-size: 24px; margin-bottom: 16px; }
+        .feature-card p { color: var(--text-dim); font-size: 16px; }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 80px 5%;
+            background: rgba(0, 229, 255, 0.02);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .stat-item h2 { font-size: 48px; color: var(--primary); }
+        .stat-item p { color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; font-weight: 700; }
+
+        /* CTA */
+        .cta-section {
+            padding: 150px 5%;
+            text-align: center;
+        }
+        .cta-box {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(124, 58, 237, 0.1));
+            padding: 80px;
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+        }
+
+        footer {
+            padding: 60px 5%;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 48px; }
+            .features { grid-template-columns: 1fr; }
+            .cta-box { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <nav>
+        <div class="logo">Vibe<span>Guard</span></div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+        </ul>
+        <a href="https://github.com/20omkale/vibeguard" class="btn btn-primary">Try for Free</a>
+    </nav>
+
+    <section class="hero">
+        <div class="badge">Next-Gen Autonomous Agent 2.0</div>
+        <h1>Your Personal <span>AI Software Factory</span></h1>
+        <p>From rough ideas to production-grade applications. Architect, code, and self-heal with the world's most intelligent autonomous software engineer.</p>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+            <a href="#download" class="btn btn-primary">Download VibeGuard.exe</a>
+            <a href="#demo" class="btn" style="border: 1px solid var(--glass-border); color: white;">Watch Demo</a>
+        </div>
+
+        <div class="mockup-container">
+            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=2000" class="mockup" alt="VibeGuard Dashboard">
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stat-item">
+            <h2>$0</h2>
+            <p>Infrastructure Cost</p>
+        </div>
+        <div class="stat-item">
+            <h2>94%</h2>
+            <p>Code Correctness</p>
+        </div>
+        <div class="stat-item">
+            <h2>11ms</h2>
+            <p>Average Latency</p>
+        </div>
+        <div class="stat-item">
+            <h2>5k+</h2>
+            <p>Autonomous Builds</p>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="feature-card">
+            <div class="f-icon">💡</div>
+            <h3>Project Genesis</h3>
+            <p>Turn a rough thought into a professional PRD, Architecture, and Database schema in 60 seconds.</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon">🏗️</div>
+            <h3>Autonomous Factory</h3>
+            <p>The agent writes every file, installs dependencies, and fixes its own bugs in an iterative loop.</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon">🛡️</div>
+            <h3>Session Protector</h3>
+            <p>Never lose code again. VibeGuard tracks all functions and prevents AI from silently deleting your work.</p>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-box">
+            <h2 style="font-size: 48px; margin-bottom: 24px;">Ready to build like a Senior Dev?</h2>
+            <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 18px;">Join the thousands of developers using VibeGuard to ship production apps at the speed of thought.</p>
+            <a href="#" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;">Get Started Now</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 VibeGuard AI. Built for the future of autonomous engineering.</p>
+    </footer>
+</body>
+</html>
