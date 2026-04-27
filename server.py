@@ -270,6 +270,48 @@ def build():
     return sse_stream(task, prompt, target)
 
 
+@app.route("/api/upgrade", methods=["POST"])
+def upgrade():
+    data = request.json or {}
+    path = data.get("path", ".").strip() or "."
+    instruction = data.get("instruction", "").strip()
+
+    if not instruction:
+        return jsonify({"error": "No instruction provided"}), 400
+
+    def task(q, path, instruction):
+        try:
+            from core.llm_gateway import get_llm_client
+            from core.memory_engine import generate_project_memory
+            from core.autonomous_agent import _code_phase
+            
+            client = get_llm_client()
+            root = Path(path)
+            
+            q.put({"type": "step", "text": "Scanning existing project memory..."})
+            memory = generate_project_memory(path)
+            
+            q.put({"type": "step", "text": "Planning upgrade architecture..."})
+            plan_prompt = f"Existing project memory: {memory}\n\nTask: {instruction}\nPlan the necessary file changes/additions to make this production-ready. Return JSON matching architecture format."
+            
+            response = client.chat([{"role": "user", "content": plan_prompt}])
+            import re
+            text = response
+            if "```json" in text: text = text.split("```json")[1].split("```")[0]
+            elif "```" in text: text = text.split("```")[1].split("```")[0]
+            architecture = json.loads(text.strip())
+            
+            q.put({"type": "step", "text": f"Applying {len(architecture.get('files', {}))} upgrades..."})
+            _code_phase(client, architecture, root, instruction)
+            
+            q.put({"type": "result", "data": {"path": str(root)}})
+            
+        except Exception as e:
+            q.put({"type": "error", "text": str(e)})
+
+    return sse_stream(task, path, instruction)
+
+
 @app.route("/api/diagnose", methods=["POST"])
 def diagnose():
     data  = request.json or {}
@@ -364,7 +406,7 @@ def start_server(port: int = 7456, open_browser: bool = True):
             webbrowser.open(f"http://localhost:{port}")
         threading.Thread(target=_open, daemon=True).start()
 
-    print(f"\n  VibeGuard Dashboard → http://localhost:{port}\n  Press Ctrl+C to stop.\n")
+    print(f"\n  VibeGuard Dashboard -> http://localhost:{port}\n  Press Ctrl+C to stop.\n")
     app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False, threaded=True)
 
 

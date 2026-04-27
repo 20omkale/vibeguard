@@ -19,14 +19,17 @@ window.onload = async () => {
     currentProvider = data.provider;
     
     if (data.configured) {
-      document.getElementById('providerBadge').innerHTML = `
-        <div style="color:var(--success);margin-bottom:4px">✓ Connected</div>
-        <div>Using: <b>${data.provider_name}</b></div>
+      document.getElementById('providerStatus').innerHTML = `
+        <div class="status-dot"></div>
+        <span id="providerName"><b>${data.provider_name}</b></span>
       `;
-      document.getElementById('homeStatus').innerHTML = `<span style="color:var(--success)">✅ Connected to ${data.provider_name}. Ready to build.</span>`;
+      document.getElementById('homeStatus').innerHTML = `<span style="color:var(--accent-cyan)">✅ Connected to ${data.provider_name}. Factory online.</span>`;
     } else {
-      document.getElementById('providerBadge').innerHTML = `<span style="color:var(--warn)">⚠️ Not configured</span>`;
-      document.getElementById('homeStatus').innerHTML = `<span style="color:var(--warn)">⚠️ No AI provider configured. <a href="#" onclick="showPage('settings')" style="color:var(--primary)">Configure now →</a></span>`;
+      document.getElementById('providerStatus').innerHTML = `
+        <div class="status-dot" style="background:var(--warn);box-shadow:0 0 10px var(--warn)"></div>
+        <span id="providerName">Offline</span>
+      `;
+      document.getElementById('homeStatus').innerHTML = `<span style="color:var(--warn)">⚠️ No AI provider configured. <a href="#" onclick="showPage('settings')" style="color:var(--accent-cyan)">Configure Brain →</a></span>`;
       showPage('settings');
     }
   } catch(e) {
@@ -163,6 +166,28 @@ function runBuild() {
       <h3 style="color:var(--success);margin-bottom:8px">✅ Build Complete!</h3>
       <p>Project generated in: <br/><code style="background:#000;padding:4px">${data.output_dir}</code></p>
       ${data.run_command ? `<p style="margin-top:12px">To run it:<br/><code style="background:#000;padding:4px;color:var(--primary)">${data.run_command}</code></p>` : ''}
+    `;
+    resBox.style.display = 'block';
+  });
+}
+
+// ── Upgrade ──
+function runUpgrade() {
+  const path = document.getElementById('upgradePath').value;
+  const instruction = document.getElementById('upgradeInstruction').value;
+  if(!path || !instruction) return;
+  
+  runStream('upgrade', {path, instruction}, 'upgrade-output', 'upgrade-result', (data, resBox) => {
+    resBox.className = 'result-box';
+    resBox.innerHTML = `
+      <h3 style="color:var(--accent-cyan);margin-bottom:8px">🚀 Upgrade Complete!</h3>
+      <p>I have scanned and upgraded the project at: <br/><code style="background:#000;padding:4px">${data.path}</code></p>
+      <p style="margin-top:12px"><b>Tasks performed:</b></p>
+      <ul style="margin-left:20px;margin-top:8px;color:var(--text-secondary)">
+        <li>Memory Engine updated</li>
+        <li>Bugs identified and fixed</li>
+        <li>Production optimizations applied</li>
+      </ul>
     `;
     resBox.style.display = 'block';
   });

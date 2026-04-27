@@ -16,14 +16,20 @@
     <div><div class="logo-name">VibeGuard</div><div class="logo-sub">AI Dev Platform</div></div>
   </div>
   <nav class="nav">
-    <a class="nav-item active" data-page="home"     onclick="showPage('home')">🏠 Home</a>
-    <a class="nav-item"        data-page="genesis"  onclick="showPage('genesis')">💡 Genesis</a>
-    <a class="nav-item"        data-page="build"    onclick="showPage('build')">🏗️ Build</a>
-    <a class="nav-item"        data-page="protect"  onclick="showPage('protect')">🛡️ Protect</a>
-    <a class="nav-item"        data-page="diagnose" onclick="showPage('diagnose')">🐛 Diagnose</a>
-    <a class="nav-item"        data-page="settings" onclick="showPage('settings')">⚙️ Settings</a>
+    <a class="nav-item active" data-page="home"     onclick="showPage('home')">🏠 Dashboard</a>
+    <a class="nav-item"        data-page="genesis"  onclick="showPage('genesis')">💡 Genesis Engine</a>
+    <a class="nav-item"        data-page="build"    onclick="showPage('build')">🏗️ Build from Zero</a>
+    <a class="nav-item"        data-page="upgrade"  onclick="showPage('upgrade')">🚀 Upgrade Project</a>
+    <a class="nav-item"        data-page="protect"  onclick="showPage('protect')">🛡️ Session Guard</a>
+    <a class="nav-item"        data-page="diagnose" onclick="showPage('diagnose')">🐛 Error Detective</a>
+    <a class="nav-item"        data-page="settings" onclick="showPage('settings')">⚙️ AI Brain</a>
   </nav>
-  <div class="sidebar-footer" id="providerBadge">Loading...</div>
+  <div class="sidebar-footer">
+    <div class="provider-status" id="providerStatus">
+      <div class="status-dot"></div>
+      <span id="providerName">Connecting...</span>
+    </div>
+  </div>
 </aside>
 
 <!-- Main -->
@@ -102,6 +108,27 @@
     </div>
     <div id="build-output" class="terminal" style="display:none"></div>
     <div id="build-result" class="result-box" style="display:none"></div>
+  </div>
+
+  <!-- UPGRADE PROJECT -->
+  <div id="page-upgrade" class="page">
+    <div class="page-header">
+      <h1>🚀 Upgrade Existing Project</h1>
+      <p>I'll read your existing code (like your Carbon Platform), fix bugs, add features, and make it production-ready.</p>
+    </div>
+    <div class="panel">
+      <div class="field-group">
+        <label class="field-label">Project Folder Path</label>
+        <input id="upgradePath" class="input" placeholder="e.g. C:\Users\omkal\Desktop\carbon-platform"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">What should I do?</label>
+        <textarea id="upgradeInstruction" class="textarea" rows="4" placeholder="e.g. 'Build the production-ready dashboard', 'Fix all blockchain integration errors', 'Make it scale for 10k users'"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="runUpgrade()">Upgrade Now 🚀</button>
+    </div>
+    <div id="upgrade-output" class="terminal" style="display:none"></div>
+    <div id="upgrade-result" class="result-box" style="display:none"></div>
   </div>
 
   <!-- PROTECT -->
