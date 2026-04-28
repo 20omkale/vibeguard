@@ -70,7 +70,6 @@ def run_compiler():
         "--exclude-module", "scipy",
         "--exclude-module", "matplotlib",
         "--exclude-module", "tensorboard",
-        "--exclude-module", "tkinter",
         "--exclude-module", "PyQt5",
         "--exclude-module", "PyQt6",
         "--exclude-module", "IPython",

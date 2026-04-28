@@ -17,7 +17,13 @@ from flask_cors import CORS
 
 # ── App setup ─────────────────────────────────────────────────────────────────
 
-BASE_DIR = Path(__file__).parent
+if getattr(sys, 'frozen', False):
+    # Running in a PyInstaller bundle
+    BASE_DIR = Path(sys._MEIPASS)
+else:
+    # Running in normal Python environment
+    BASE_DIR = Path(__file__).parent
+
 UI_DIR   = BASE_DIR / "ui"
 
 app = Flask(__name__, static_folder=str(UI_DIR), static_url_path="")
@@ -276,7 +282,7 @@ def build():
 @app.route("/api/upgrade", methods=["POST"])
 def upgrade():
     data = request.json or {}
-    path = data.get("path", ".").strip() or "."
+    path = data.get("path", ".").strip().strip('"').strip("'") or "."
     instruction = data.get("instruction", "").strip()
 
     if not instruction:
@@ -287,10 +293,21 @@ def upgrade():
             from core.llm_gateway import get_llm_client
             from core.memory_engine import generate_project_memory
             from core.autonomous_agent import _code_phase
+            from core.project_genesis import _generate_prd, _generate_architecture
             
             client = get_llm_client()
             root = Path(path)
+            root.mkdir(parents=True, exist_ok=True)
             
+            # Phase 0: Documentation First (Senior Dev Approach)
+            q.put({"type": "step", "text": "Phase 0: Studying project and generating technical documentation..."})
+            memory = generate_project_memory(path)
+            
+            doc_context = {"raw_idea": instruction, "existing_memory": memory}
+            _generate_prd(client, doc_context, root)
+            _generate_architecture(client, doc_context, root)
+            q.put({"type": "success", "text": "✓ Documentation generated (PRD.md, ARCHITECTURE.md)"})
+
             # Autonomous Deep Loop (The "Sleep & Build" Engine)
             max_iterations = 10
             for i in range(max_iterations):
@@ -368,7 +385,7 @@ def diagnose():
 @app.route("/api/protect/before", methods=["POST"])
 def protect_before():
     data = request.json or {}
-    path = data.get("path", ".").strip() or "."
+    path = data.get("path", ".").strip().strip('"').strip("'") or "."
 
     def task(q, path):
         try:
@@ -393,7 +410,7 @@ def protect_before():
 @app.route("/api/protect/after", methods=["POST"])
 def protect_after():
     data = request.json or {}
-    path = data.get("path", ".").strip() or "."
+    path = data.get("path", ".").strip().strip('"').strip("'") or "."
 
     def task(q, path):
         try:
@@ -421,6 +438,44 @@ def protect_after():
             q.put({"type": "error", "text": str(e)})
 
     return sse_stream(task, path)
+
+
+# ── Utils ──────────────────────────────────────────────────────────────────────
+
+@app.route("/api/utils/select-folder", methods=["GET"])
+def select_folder():
+    """Opens a native folder picker on the host machine."""
+    import tkinter as tk
+    from tkinter import filedialog
+    
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)
+    folder_path = filedialog.askdirectory()
+    root.destroy()
+    
+    return jsonify({"path": folder_path if folder_path else ""})
+
+
+@app.route("/api/utils/upload-docs", methods=["POST"])
+def upload_docs():
+    """Handle document/image uploads for AI context."""
+    if 'files' not in request.files:
+        return jsonify({"error": "No files"}), 400
+    
+    files = request.files.getlist('files')
+    target_path = request.form.get("path", ".").strip().strip('"').strip("'") or "."
+    upload_dir = Path(target_path) / ".vibeguard" / "context"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    saved = []
+    for f in files:
+        if f.filename:
+            fpath = upload_dir / f.filename
+            f.save(str(fpath))
+            saved.append(f.filename)
+            
+    return jsonify({"ok": True, "files": saved})
 
 
 # ── Launch ─────────────────────────────────────────────────────────────────────

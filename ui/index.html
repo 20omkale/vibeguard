@@ -103,8 +103,11 @@
       <label class="field-label">What do you want to build?</label>
       <textarea id="buildPrompt" class="textarea" rows="3" placeholder="e.g. a REST API for a blog with user authentication using FastAPI and PostgreSQL"></textarea>
       <label class="field-label" style="margin-top:16px">Output folder (where to create the project)</label>
-      <input id="buildTarget" class="input" placeholder="Leave blank → creates in your home folder"/>
-      <button class="btn btn-primary" onclick="runBuild()">Build It 🚀</button>
+      <div style="display: flex; gap: 8px;">
+        <input id="buildTarget" class="input" placeholder="Leave blank → creates in your home folder" style="flex: 1;"/>
+        <button class="btn btn-ghost" onclick="selectFolder('buildTarget')">📁 Browse</button>
+      </div>
+      <button class="btn btn-primary" onclick="runBuild()" style="margin-top: 16px;">Build It 🚀</button>
     </div>
     <div id="build-output" class="terminal" style="display:none"></div>
     <div id="build-result" class="result-box" style="display:none"></div>
@@ -119,7 +122,15 @@
     <div class="panel">
       <div class="field-group">
         <label class="field-label">Project Folder Path</label>
-        <input id="upgradePath" class="input" placeholder="e.g. C:\Users\omkal\Desktop\carbon-platform"/>
+        <div style="display: flex; gap: 8px;">
+          <input id="upgradePath" class="input" placeholder="e.g. C:\Users\omkal\Desktop\carbon-platform" style="flex: 1;"/>
+          <button class="btn btn-ghost" onclick="selectFolder('upgradePath')">📁 Browse</button>
+        </div>
+      </div>
+      <div class="field-group" style="margin-top: 16px; padding: 16px; border: 1px dashed var(--border-glass); border-radius: 8px;">
+        <label class="field-label">Provide Context (Optional)</label>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;">Upload images, PRDs, or architecture docs for the AI to study before building.</p>
+        <input type="file" id="upgradeDocs" multiple class="input" style="padding: 8px; font-size: 0.85rem;"/>
       </div>
       <div class="field-group">
         <label class="field-label">What should I do?</label>
@@ -146,8 +157,11 @@
     </div>
     <div class="panel">
       <label class="field-label">Project folder path</label>
-      <input id="protectPath" class="input" placeholder="e.g. C:\Users\you\myproject  (leave blank for current folder)"/>
-      <div class="btn-row">
+      <div style="display: flex; gap: 8px;">
+        <input id="protectPath" class="input" placeholder="e.g. C:\Users\you\myproject  (leave blank for current folder)" style="flex: 1;"/>
+        <button class="btn btn-ghost" onclick="selectFolder('protectPath')">📁 Browse</button>
+      </div>
+      <div class="btn-row" style="margin-top: 16px;">
         <button class="btn btn-primary" onclick="protectBefore()">📸 Take Snapshot (Before)</button>
         <button class="btn btn-warn"    onclick="protectAfter()">🔍 Check Changes (After)</button>
       </div>

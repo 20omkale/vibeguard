@@ -172,10 +172,34 @@ function runBuild() {
 }
 
 // ── Upgrade ──
-function runUpgrade() {
+async function runUpgrade() {
   const path = document.getElementById('upgradePath').value;
   const instruction = document.getElementById('upgradeInstruction').value;
+  const docInput = document.getElementById('upgradeDocs');
+  
   if(!path || !instruction) return;
+  
+  const resBox = document.getElementById('upgrade-result');
+  const term = document.getElementById('upgrade-output');
+  term.style.display = 'block';
+  term.innerHTML = '<div class="log-step">▶ Initializing...</div>';
+  resBox.style.display = 'none';
+
+  // Upload context files if any
+  if (docInput && docInput.files.length > 0) {
+    term.innerHTML += '<div class="log-step">▶ Uploading context documents to AI memory...</div>';
+    const formData = new FormData();
+    formData.append("path", path);
+    for (let i = 0; i < docInput.files.length; i++) {
+      formData.append("files", docInput.files[i]);
+    }
+    try {
+      await fetch(`${API_BASE}/utils/upload-docs`, { method: 'POST', body: formData });
+      term.innerHTML += '<div class="log-success">✓ Context uploaded successfully.</div>';
+    } catch(e) {
+      term.innerHTML += `<div class="log-error">✗ Failed to upload context: ${e}</div>`;
+    }
+  }
   
   runStream('upgrade', {path, instruction}, 'upgrade-output', 'upgrade-result', (data, resBox) => {
     resBox.className = 'result-box';
@@ -184,13 +208,27 @@ function runUpgrade() {
       <p>I have scanned and upgraded the project at: <br/><code style="background:#000;padding:4px">${data.path}</code></p>
       <p style="margin-top:12px"><b>Tasks performed:</b></p>
       <ul style="margin-left:20px;margin-top:8px;color:var(--text-secondary)">
-        <li>Memory Engine updated</li>
+        <li>Generated complete PRD & Architecture</li>
+        <li>Memory Engine updated with new context</li>
         <li>Bugs identified and fixed</li>
         <li>Production optimizations applied</li>
       </ul>
     `;
     resBox.style.display = 'block';
   });
+}
+
+// ── Native Folder Picker ──
+async function selectFolder(inputId) {
+  try {
+    const res = await fetch(`${API_BASE}/utils/select-folder`);
+    const data = await res.json();
+    if (data.path) {
+      document.getElementById(inputId).value = data.path;
+    }
+  } catch(e) {
+    console.error("Folder picker failed", e);
+  }
 }
 
 // ── Diagnose ──

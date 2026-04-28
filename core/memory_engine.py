@@ -300,6 +300,31 @@ def generate_memory_doc(memory: dict, output_path: Path) -> None:
     output_path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def generate_project_memory(target_dir: str) -> str:
+    """Returns a text summary of the codebase for LLM context."""
+    root = Path(target_dir.strip().strip('"').strip("'"))
+    if not root.exists():
+        return "Project directory not found."
+    
+    memory = scan_codebase(root)
+    
+    summary = [
+        f"Project Root: {memory['root']}",
+        f"Total Files: {memory['stats']['total_files']}",
+        f"Main Languages: {', '.join(memory['stats']['by_extension'].keys())}",
+        "\nEntry Points:",
+    ]
+    summary += [f"- {ep}" for ep in memory["entry_points"]]
+    
+    summary.append("\nKey Files & Symbols:")
+    for rel_path, fdata in list(memory["files"].items())[:15]:
+        syms = fdata.get("symbols", {})
+        funcs = [f["name"] for f in syms.get("functions", [])[:5]]
+        summary.append(f"- {rel_path} ({fdata['lines']} lines): {', '.join(funcs)}")
+        
+    return "\n".join(summary)
+
+
 def run_scan(target_dir: Optional[str] = None) -> dict:
     """Main entry point: scan + generate memory doc."""
     root = Path(target_dir) if target_dir else Path.cwd()
