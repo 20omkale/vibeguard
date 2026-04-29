@@ -11,7 +11,7 @@
 [![Anthropic](https://img.shields.io/badge/Anthropic-Compatible-C9A84C.svg)](https://anthropic.com)
 [![Ollama](https://img.shields.io/badge/Ollama-Offline%20Mode-white.svg)](https://ollama.com)
 
-*The end-to-end autonomous software factory with a beautiful Gen-Z Dashboard.*
+*The professional 3-pane AI workspace and software factory.*
 
 ---
 
@@ -28,13 +28,14 @@ This gives you a secure global URL (e.g., `https://your-app.ngrok-free.app`) tha
 
 ---
 
-## 🚀 The Web Dashboard Experience
+## 🏛️ The Professional Workspace (V2)
 
-VibeGuard is no longer just a command-line tool. It now features a **professional Web UI** that launches automatically. 
+VibeGuard has evolved into a **Unified Engineering Workspace** that rivals elite platforms like Cursor and Antigravity.
 
-- **For Clients:** Double-click `VibeGuard.exe` and a sleek dashboard opens in your browser.
-- **For Developers:** Complete control via the dashboard or the powerful CLI.
-- **Real-time Streaming:** Watch the agent architect and code your project in real-time.
+- **The Explorer (Left):** Live, recursive project navigation with "Recent Workspace" memory.
+- **The Forge (Center):** A high-fidelity code viewer and "Project Intelligence Dashboard" for real-time monitoring.
+- **The Agent (Right):** A persistent, context-locked AI Sidekick that never leaves your side.
+- **Unified Terminal (Bottom):** Watch the AI's senior-level thinking stream in real-time as it architects your project.
 
 ---
 
