@@ -5,6 +5,7 @@ let chatHistory = [];
 let activeFileContent = ''; 
 let activeFileName = '';
 let isGuardActive = false;
+let lastLogTime = 0;
 
 // ── UI Persistence ──
 function showMode(modeId) {
@@ -369,7 +370,23 @@ window.onload = async () => {
     document.getElementById('providerStatus').innerHTML = `<div class="status-dot"></div><span>${data.provider_name}</span>`;
   }
   loadRecentProjects();
+  startLogPolling();
 };
+
+async function startLogPolling() {
+  setInterval(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/utils/logs?after=${lastLogTime}`);
+      const data = await res.json();
+      if (data.logs && data.logs.length > 0) {
+        data.logs.forEach(log => {
+          logToTerminal(log.text, log.type);
+          lastLogTime = Math.max(lastLogTime, log.time);
+        });
+      }
+    } catch(e) {}
+  }, 2000); // Poll every 2s
+}
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey && document.activeElement.id === 'chatInput') {
