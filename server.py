@@ -446,6 +446,25 @@ def protect_before():
     return sse_stream(task, path)
 
 
+@app.route("/api/diagnose", methods=["POST"])
+def diagnose():
+    data = request.json or {}
+    path = data.get("path", "").strip().strip('"').strip("'")
+    if not path:
+        return jsonify({"error": "No project path"}), 400
+
+    def task(q, path):
+        try:
+            from core.diagnostics_engine import DiagnosticsEngine
+            engine = DiagnosticsEngine(path)
+            report = engine.run_scan()
+            q.put({"type": "result", "data": report})
+        except Exception as e:
+            q.put({"type": "error", "text": str(e)})
+
+    return sse_stream(task, path)
+
+
 @app.route("/api/protect/after", methods=["POST"])
 def protect_after():
     data = request.json or {}
