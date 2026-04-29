@@ -3,227 +3,203 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>VibeGuard — AI Developer Platform</title>
+<title>VibeGuard Forge — Professional AI Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
-<!-- Sidebar -->
-<aside class="sidebar">
-  <div class="logo">
-    <span class="logo-icon">🛡️</span>
-    <div><div class="logo-name">VibeGuard</div><div class="logo-sub">AI Dev Platform</div></div>
-  </div>
-  <nav class="nav">
-    <a class="nav-item active" data-page="home"     onclick="showPage('home')">🏠 Dashboard</a>
-    <a class="nav-item"        data-page="genesis"  onclick="showPage('genesis')">💡 Genesis Engine</a>
-    <a class="nav-item"        data-page="build"    onclick="showPage('build')">🏗️ Build from Zero</a>
-    <a class="nav-item"        data-page="upgrade"  onclick="showPage('upgrade')">🚀 Upgrade Project</a>
-    <a class="nav-item"        data-page="protect"  onclick="showPage('protect')">🛡️ Session Guard</a>
-    <a class="nav-item"        data-page="diagnose" onclick="showPage('diagnose')">🐛 Error Detective</a>
-    <a class="nav-item"        data-page="settings" onclick="showPage('settings')">⚙️ AI Brain</a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="provider-status" id="providerStatus">
-      <div class="status-dot"></div>
-      <span id="providerName">Connecting...</span>
-    </div>
-  </div>
-</aside>
 
-<!-- Main -->
-<main class="main">
+<div class="workspace-wrapper">
+  
+  <!-- Left Sidebar: Navigation & Explorer -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🛡️</div>
+      <div class="logo-info">
+        <div class="name">VibeGuard</div>
+        <div class="tagline">The AI Forge</div>
+      </div>
+    </div>
 
-  <!-- HOME -->
-  <div id="page-home" class="page active">
-    <div class="page-header">
-      <h1>Welcome to VibeGuard</h1>
-      <p>Your AI senior developer — available 24/7. Pick what you need below.</p>
+    <div class="nav-section-title">PROJECT</div>
+    <div class="workspace-selector">
+      <input type="text" id="globalProjectPath" class="input-mini" placeholder="Path or Open..."/>
+      <button class="btn-icon" onclick="selectFolder('globalProjectPath'); refreshExplorer();" title="Open Folder">📂</button>
     </div>
-    <div class="cards-grid">
-      <div class="card card-highlight" onclick="showPage('genesis')">
-        <div class="card-icon">💡</div>
-        <div class="card-title">Project Genesis</div>
-        <div class="card-desc">Turn a rough idea into a full blueprint — PRD, architecture, database schema, API spec, and AI prompts.</div>
-        <div class="card-cta">Start Genesis →</div>
-      </div>
-      <div class="card" onclick="showPage('build')">
-        <div class="card-icon">🏗️</div>
-        <div class="card-title">Build a Project</div>
-        <div class="card-desc">Describe your idea. The agent writes every file, installs dependencies, and gets it running.</div>
-        <div class="card-cta">Start Building →</div>
-      </div>
-      <div class="card" onclick="showPage('protect')">
-        <div class="card-icon">🛡️</div>
-        <div class="card-title">Session Protect</div>
-        <div class="card-desc">Stop AI from silently deleting your functions. Snapshot before, compare after, restore in one click.</div>
-        <div class="card-cta">Protect Now →</div>
-      </div>
-      <div class="card" onclick="showPage('diagnose')">
-        <div class="card-icon">🐛</div>
-        <div class="card-title">Debug an Error</div>
-        <div class="card-desc">Paste any error or stack trace. Get the root cause, the fix, and a prompt to paste into your AI tool.</div>
-        <div class="card-cta">Debug Now →</div>
-      </div>
-    </div>
-    <div class="info-row" id="homeStatus"></div>
-  </div>
 
-  <!-- GENESIS -->
-  <div id="page-genesis" class="page">
-    <div class="page-header">
-      <h1>💡 Project Genesis</h1>
-      <p>From rough idea to complete project blueprint. No Figma needed. No docs needed.</p>
+    <div id="recentProjects" class="recent-list">
+      <!-- Populated via JS -->
     </div>
-    <div class="panel">
-      <div id="genesis-step1">
-        <label class="field-label">Describe your idea</label>
-        <textarea id="genesisIdea" class="textarea" rows="3" placeholder="e.g. a food delivery app like Swiggy, a SaaS invoice tool for freelancers, a Discord bot that tracks crypto prices..."></textarea>
-        <button class="btn btn-primary" onclick="genesisGetQuestions()">Continue →</button>
-      </div>
-      <div id="genesis-step2" style="display:none">
-        <div class="field-label" style="margin-bottom:12px">A few quick questions so I build exactly what you need:</div>
-        <div id="genesisQuestions"></div>
-        <button class="btn btn-primary" onclick="genesisRun()">Generate Blueprint 🚀</button>
-        <button class="btn btn-ghost" onclick="genesisSkip()">Skip questions, just generate</button>
-      </div>
-    </div>
-    <div id="genesis-output" class="terminal" style="display:none"></div>
-    <div id="genesis-result" class="result-box" style="display:none"></div>
-  </div>
 
-  <!-- BUILD -->
-  <div id="page-build" class="page">
-    <div class="page-header">
-      <h1>🏗️ Build a Project</h1>
-      <p>The agent plans, codes, and installs everything. You just describe what you want.</p>
+    <div id="fileExplorer" class="file-explorer">
+      <!-- File tree populated via JS -->
+      <div class="empty-state">Select a project folder to browse files</div>
     </div>
-    <div class="panel">
-      <label class="field-label">What do you want to build?</label>
-      <textarea id="buildPrompt" class="textarea" rows="3" placeholder="e.g. a REST API for a blog with user authentication using FastAPI and PostgreSQL"></textarea>
-      <label class="field-label" style="margin-top:16px">Output folder (where to create the project)</label>
-      <div style="display: flex; gap: 8px;">
-        <input id="buildTarget" class="input" placeholder="Leave blank → creates in your home folder" style="flex: 1;"/>
-        <button class="btn btn-ghost" onclick="selectFolder('buildTarget')">📁 Browse</button>
-      </div>
-      <button class="btn btn-primary" onclick="runBuild()" style="margin-top: 16px;">Build It 🚀</button>
-    </div>
-    <div id="build-output" class="terminal" style="display:none"></div>
-    <div id="build-result" class="result-box" style="display:none"></div>
-  </div>
 
-  <!-- UPGRADE PROJECT -->
-  <div id="page-upgrade" class="page">
-    <div class="page-header">
-      <h1>🚀 Upgrade Existing Project</h1>
-      <p>I'll read your existing code (like your Carbon Platform), fix bugs, add features, and make it production-ready.</p>
+    <div class="nav-section-title" style="margin-top:auto">MODES</div>
+    <nav class="nav">
+      <a class="nav-item active" data-page="chat" onclick="showMode('chat')">💬 Chat Agent</a>
+      <a class="nav-item" data-page="genesis" onclick="showMode('genesis')">💡 Genesis</a>
+      <a class="nav-item" data-page="build" onclick="showMode('build')">🏗️ Build</a>
+      <a class="nav-item" data-page="upgrade" onclick="showMode('upgrade')">🚀 Upgrade</a>
+      <a class="nav-item" data-page="diagnose" onclick="showMode('diagnose')">🔍 Error Detective</a>
+      <a class="nav-item" data-page="protect" onclick="showMode('protect')">🛡️ Protect</a>
+      <a class="nav-item" data-page="settings" onclick="showMode('settings')">⚙️ AI Brain</a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="provider-status" id="providerStatus">
+        <div class="status-dot"></div>
+        <span id="providerName">Connecting...</span>
+      </div>
     </div>
-    <div class="panel">
-      <div class="field-group">
-        <label class="field-label">Project Folder Path</label>
-        <div style="display: flex; gap: 8px;">
-          <input id="upgradePath" class="input" placeholder="e.g. C:\Users\omkal\Desktop\carbon-platform" style="flex: 1;"/>
-          <button class="btn btn-ghost" onclick="selectFolder('upgradePath')">📁 Browse</button>
+  </aside>
+
+  <!-- Center Pane: The Forge (Code/Docs Viewer) -->
+  <main class="forge">
+    <div class="forge-header">
+      <div id="activeFileName" class="active-file-name">Welcome to The Forge</div>
+      <div class="forge-actions">
+        <button class="btn-ghost-mini" onclick="refreshExplorer()">🔄 Sync</button>
+      </div>
+    </div>
+    
+    <div class="forge-viewer">
+      <div id="welcomeScreen" class="welcome-screen">
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="fileCount">-</div>
+            <div class="stat-label">Project Files</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="healthScore">100%</div>
+            <div class="stat-label">Code Health</div>
+          </div>
+        </div>
+        <div class="hero-text">VibeGuard Forge Active</div>
+        <div class="hero-sub">I am currently indexed and monitoring your project context. Describe any change to begin.</div>
+        
+        <div class="quick-actions">
+          <div class="action-card" onclick="showMode('upgrade')">
+            <div class="action-icon">🚀</div>
+            <div>Deep Upgrade</div>
+          </div>
+          <div class="action-card" onclick="showMode('diagnose')">
+            <div class="action-icon">🔍</div>
+            <div>Health Scan</div>
+          </div>
+          <div class="action-card" onclick="showMode('protect')">
+            <div class="action-icon">🛡️</div>
+            <div>Active Guard</div>
+          </div>
         </div>
       </div>
-      <div class="field-group" style="margin-top: 16px; padding: 16px; border: 1px dashed var(--border-glass); border-radius: 8px;">
-        <label class="field-label">Provide Context (Optional)</label>
-        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;">Upload images, PRDs, or architecture docs for the AI to study before building.</p>
-        <input type="file" id="upgradeDocs" multiple class="input" style="padding: 8px; font-size: 0.85rem;"/>
-      </div>
-      <div class="field-group">
-        <label class="field-label">What should I do?</label>
-        <textarea id="upgradeInstruction" class="textarea" rows="4" placeholder="e.g. 'Build the production-ready dashboard', 'Fix all blockchain integration errors', 'Make it scale for 10k users'"></textarea>
-      </div>
-      <button class="btn btn-primary" onclick="runUpgrade()">Upgrade Now 🚀</button>
+      <pre id="codeViewer" class="code-viewer" style="display:none"></pre>
     </div>
-    <div id="upgrade-output" class="terminal" style="display:none"></div>
-    <div id="upgrade-result" class="result-box" style="display:none"></div>
-  </div>
 
-  <!-- PROTECT -->
-  <div id="page-protect" class="page">
-    <div class="page-header">
-      <h1>🛡️ Session Protection</h1>
-      <p>AI tools silently delete your code. VibeGuard tracks every function, class, and API route.</p>
-    </div>
-    <div class="how-it-works">
-      <div class="step-item"><div class="step-num">1</div><div><b>Before AI session</b><br/>Click "Take Snapshot" — VibeGuard records everything in your project</div></div>
-      <div class="step-arrow">→</div>
-      <div class="step-item"><div class="step-num">2</div><div><b>Do your AI coding</b><br/>Use Cursor, Claude, ChatGPT — do your work as normal</div></div>
-      <div class="step-arrow">→</div>
-      <div class="step-item"><div class="step-num">3</div><div><b>After AI session</b><br/>Click "Check Changes" — see exactly what was deleted</div></div>
-    </div>
-    <div class="panel">
-      <label class="field-label">Project folder path</label>
-      <div style="display: flex; gap: 8px;">
-        <input id="protectPath" class="input" placeholder="e.g. C:\Users\you\myproject  (leave blank for current folder)" style="flex: 1;"/>
-        <button class="btn btn-ghost" onclick="selectFolder('protectPath')">📁 Browse</button>
-      </div>
-      <div class="btn-row" style="margin-top: 16px;">
-        <button class="btn btn-primary" onclick="protectBefore()">📸 Take Snapshot (Before)</button>
-        <button class="btn btn-warn"    onclick="protectAfter()">🔍 Check Changes (After)</button>
-      </div>
-    </div>
-    <div id="protect-output" class="terminal" style="display:none"></div>
-    <div id="protect-result" class="result-box" style="display:none"></div>
-  </div>
 
-  <!-- DIAGNOSE -->
-  <div id="page-diagnose" class="page">
-    <div class="page-header">
-      <h1>🐛 Error Diagnosis</h1>
-      <p>Paste any error or stack trace. Get the root cause and the exact fix.</p>
-    </div>
-    <div class="panel">
-      <label class="field-label">Paste your error / stack trace</label>
-      <textarea id="diagnoseError" class="textarea" rows="6" placeholder="Paste the full error message or stack trace here...&#10;&#10;Example:&#10;TypeError: Cannot read properties of undefined (reading 'map')&#10;    at ProductList (ProductList.jsx:24:18)"></textarea>
-      <label class="field-label" style="margin-top:16px">Project folder (optional — helps give better context)</label>
-      <input id="diagnosePath" class="input" placeholder="e.g. C:\Users\you\myproject"/>
-      <button class="btn btn-primary" onclick="runDiagnose()">Diagnose &amp; Fix 🔍</button>
-    </div>
-    <div id="diagnose-output" class="terminal" style="display:none"></div>
-    <div id="diagnose-result" class="result-box" style="display:none"></div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div id="page-settings" class="page">
-    <div class="page-header">
-      <h1>⚙️ Settings</h1>
-      <p>Choose your AI provider. Set it once — works everywhere.</p>
-    </div>
-    <div class="panel">
-      <label class="field-label">AI Provider</label>
-      <div class="provider-grid" id="providerGrid"></div>
-      <div id="apiKeySection" style="display:none;margin-top:20px">
-        <label class="field-label" id="apiKeyLabel">API Key</label>
-        <div class="key-hint" id="apiKeyHint"></div>
-        <input id="apiKeyInput" class="input" type="password" placeholder="Paste your API key here..."/>
+    <!-- Bottom Pane: Live Terminal -->
+    <div class="workspace-terminal">
+      <div class="terminal-header">
+        <span>System Log</span>
+        <button onclick="clearTerminal()" style="background:none;border:none;color:var(--text-muted);cursor:pointer">Clear</button>
       </div>
-      
-      <div style="margin-top:24px; padding-top:24px; border-top: 1px solid var(--border-glass)">
-        <label class="field-label">Global Access (Ngrok Authtoken)</label>
-        <div class="key-hint">Required for <code>vibeguard expose</code>. Get it at <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank">ngrok.com</a></div>
-        <input id="ngrokTokenInput" class="input" type="password" placeholder="Paste your ngrok authtoken here..."/>
-      </div>
-
-      <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:20px">Save &amp; Validate ✓</button>
-      <div id="settings-msg" style="margin-top:12px"></div>
+      <div id="globalTerminal" class="terminal-body"></div>
     </div>
-    <div class="providers-info">
-      <h3 style="margin-bottom:16px;color:var(--text-secondary)">How to get a free key</h3>
-      <div class="provider-steps">
-        <div class="pstep"><span class="badge-free">FREE</span><b>Groq</b> — Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a> → Sign up → API Keys → Create Key. Done in 30 seconds.</div>
-        <div class="pstep"><span class="badge-free">FREE</span><b>Gemini</b> — Go to <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> → Sign in with Google → Get API Key.</div>
-        <div class="pstep"><span class="badge-paid">PAID</span><b>OpenAI</b> — Go to <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> → API keys → Create.</div>
-        <div class="pstep"><span class="badge-paid">PAID</span><b>Anthropic</b> — Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.</div>
-        <div class="pstep"><span class="badge-offline">OFFLINE</span><b>Ollama</b> — Install from <a href="https://ollama.com" target="_blank">ollama.com</a> → run <code>ollama pull llama3</code>. No key needed.</div>
+  </main>
+
+  <!-- Right Sidebar: The Agent -->
+  <aside class="agent-pane">
+    <div id="mode-chat" class="mode-view active">
+      <div class="mode-header">💬 Chat Assistant</div>
+      <div class="chat-container">
+        <div id="chatMessages" class="chat-messages">
+          <div class="message-bubble ai">I am your Senior Staff Engineer. How can I help you in the forge today?</div>
+        </div>
+        <div class="chat-input-area">
+          <div id="chatFileList" class="file-list-compact"></div>
+          <div class="input-container">
+            <textarea id="chatInput" class="textarea-chat" rows="1" placeholder="Ask anything... (Enter to send)"></textarea>
+            <div class="input-actions">
+              <button class="btn-icon" onclick="document.getElementById('chatDocs').click()">📎</button>
+              <input type="file" id="chatDocs" multiple style="display:none"/>
+              <button class="btn-send" onclick="sendChatMessage()">Send</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-</main>
+    <!-- Other modes (Genesis, Build, etc.) live here as specialized views -->
+    <div id="mode-genesis" class="mode-view">
+      <div class="mode-header">💡 Project Genesis</div>
+      <div class="mode-content">
+        <label class="field-label-mini">DESCRIBE YOUR VISION</label>
+        <textarea id="genesisIdea" class="textarea" rows="4" placeholder="e.g. 'A high-speed SaaS for monitoring real-time logistics...'"></textarea>
+        <button class="btn btn-primary" style="width:100%" onclick="genesisGetQuestions()">Analyze Architecture</button>
+        <div id="genesisStep2" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border-glass)">
+          <label class="field-label-mini">ARCHITECTURAL CLARIFICATIONS</label>
+          <div id="genesisQuestions"></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="genesisRun()">Forge Project 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mode-build" class="mode-view">
+      <div class="mode-header">🏗️ Build from Zero</div>
+      <div class="mode-content">
+        <label class="field-label-mini">BUILD COMMAND</label>
+        <textarea id="buildPrompt" class="textarea" rows="4" placeholder="What should I build from scratch in the current folder?"></textarea>
+        <button class="btn btn-primary" style="width:100%" onclick="runBuild()">Start Autonomous Factory</button>
+      </div>
+    </div>
+
+    <div id="mode-upgrade" class="mode-view">
+      <div class="mode-header">🚀 Deep Upgrade</div>
+      <div class="mode-content">
+        <label class="field-label-mini">UPGRADE OBJECTIVE</label>
+        <textarea id="upgradeInstruction" class="textarea" rows="4" placeholder="What features or fixes should I implement?"></textarea>
+        <div id="upgradeFileList" class="file-list-compact"></div>
+        <button class="btn btn-primary" style="width:100%" onclick="runUpgrade()">Initiate Upgrade Loop</button>
+      </div>
+    </div>
+
+    <div id="mode-protect" class="mode-view">
+      <div class="mode-header">🛡️ Session Guard</div>
+      <div class="mode-content">
+        <div class="status-card">
+          <div class="status-title">PROTECTION STATUS</div>
+          <div id="guardStatus" class="status-value">INACTIVE</div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="toggleGuard()">Activate Guard</button>
+        <div id="guardLogs" class="log-box-mini" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+
+    <div id="mode-diagnose" class="mode-view">
+      <div class="mode-header">🔍 Error Detective</div>
+      <div class="mode-content">
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Scanning for architectural flaws and syntax errors in the forge...</p>
+        <button class="btn btn-primary" style="width:100%" onclick="runDiagnostic()">Run System Scan</button>
+        <div id="diagnoseResult" class="panel-dark" style="margin-top:20px;display:none;background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;font-size:13px;line-height:1.5;"></div>
+      </div>
+    </div>
+
+    <div id="mode-settings" class="mode-view">
+      <div class="mode-header">⚙️ AI Brain</div>
+      <div class="mode-content">
+        <div class="provider-grid" id="providerGrid"></div>
+        <div id="apiKeySection" style="display:none;margin-top:20px">
+          <input id="apiKeyInput" class="input" type="password" placeholder="API Key..."/>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveSettings()">Save & Validate</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
 
 <script src="/app.js"></script>
 </body>

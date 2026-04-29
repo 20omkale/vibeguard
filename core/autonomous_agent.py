@@ -19,6 +19,7 @@ from .llm_gateway import get_llm_client
 from .memory_engine import run_scan
 from .change_guardian import ProjectSnapshot, diff_snapshots
 from .telemetry import send_telemetry
+from .project_genesis import _generate_prd, _generate_architecture, _generate_database_schema, _generate_api_spec
 
 console = Console(force_terminal=True)
 
@@ -121,12 +122,13 @@ def _architect_project(client, enriched_prompt: str) -> dict:
 
     system_prompt = (
         "You are an elite Senior Staff Engineer and Solution Architect.\n"
-        "Given a user's project requirements, choose the BEST modern tech stack and design a complete file structure.\n"
+        "Read the user requirements AND the provided Architecture/PRD context.\n"
+        "Given this context, design a complete file structure for the project.\n"
         "Think like a CTO: choose battle-tested tech, not hype. Consider the user's skill level.\n\n"
         "Rules:\n"
+        "- The file tree must match the proposed architecture exactly.\n"
         "- For web apps: prefer React/Next.js + Express/FastAPI\n"
         "- For scripts/tools: prefer Python\n"
-        "- For mobile: prefer React Native or Flutter\n"
         "- Always include a README.md\n"
         "- Keep it minimal but complete (no bloat)\n\n"
         "Return ONLY valid JSON:\n"
@@ -143,11 +145,11 @@ def _architect_project(client, enriched_prompt: str) -> dict:
     )
 
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
-        task = progress.add_task("Designing architecture...", total=None)
+        task = progress.add_task("Designing complete file tree...", total=None)
         response = client.chat(
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": enriched_prompt},
+                {"role": "user", "content": f"Project Context:\n{enriched_prompt}"},
             ],
             temperature=0.2,
             max_tokens=3000,
@@ -330,16 +332,42 @@ def run_build(prompt: str, target_dir: str = None) -> None:
     # Phase 0: Requirements Gathering
     req_data = _gather_requirements(client, prompt)
     enriched_prompt = req_data["enriched_prompt"]
+    answers = req_data["answers"]
 
-    # Phase 1: Architecture
-    architecture = _architect_project(client, enriched_prompt)
+    # Phase 1: Blueprint Documentation
+    console.print("\n[bold yellow]📝 Phase 1: Generating Technical Blueprints[/bold yellow]")
+    console.print("[dim]A Senior Dev writes the PRD and Architecture before coding...[/dim]\n")
+    root.mkdir(parents=True, exist_ok=True)
+    
+    docs_context = {"raw_idea": enriched_prompt, **answers}
+    try:
+        _generate_prd(client, docs_context, root)
+        console.print("  [green]✓[/green] PRD.md")
+        _generate_architecture(client, docs_context, root)
+        console.print("  [green]✓[/green] ARCHITECTURE.md")
+        _generate_database_schema(client, docs_context, root)
+        console.print("  [green]✓[/green] DATABASE_SCHEMA.md")
+        _generate_api_spec(client, docs_context, root)
+        console.print("  [green]✓[/green] API_SPEC.md")
+    except Exception as e:
+        console.print(f"  [yellow]⚠ Documentation step had partial failure: {e}[/yellow]")
+
+    # Gather generated docs to feed into Phase 2 & 3
+    doc_payload = f"Original Requirements:\n{enriched_prompt}\n\n"
+    for doc in ["PRD.md", "ARCHITECTURE.md"]:
+        dp = root / doc
+        if dp.exists():
+            doc_payload += f"=== {doc} ===\n{dp.read_text(encoding='utf-8')[:2000]}\n\n"
+
+    # Phase 2: Master Architecture Plan (File Tree)
+    architecture = _architect_project(client, doc_payload)
     if not architecture:
         return
 
     baseline = ProjectSnapshot(root)
 
-    # Phase 2: Code Generation
-    _code_phase(client, architecture, root, enriched_prompt)
+    # Phase 3: Code Generation
+    _code_phase(client, architecture, root, doc_payload)
 
     # Phase 3: Install dependencies
     _install_phase(architecture, root)

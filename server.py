@@ -11,6 +11,8 @@ import webbrowser
 import time
 import sys
 import io
+import os
+import mimetypes
 from pathlib import Path
 from flask import Flask, request, jsonify, Response, send_from_directory
 from flask_cors import CORS
@@ -294,25 +296,53 @@ def upgrade():
             from core.memory_engine import generate_project_memory
             from core.autonomous_agent import _code_phase
             from core.project_genesis import _generate_prd, _generate_architecture
+            from core.chat_engine import analyze_project_gap
             
             client = get_llm_client()
             root = Path(path)
             root.mkdir(parents=True, exist_ok=True)
             
+            # Phase -1: Gap Analysis (Understanding the 'Missing' parts)
+            q.put({"type": "step", "text": "Phase -1: Performing Gap Analysis (Identifying what is missing)..."})
+            gap = analyze_project_gap(client, instruction, path)
+            q.put({"type": "log", "text": f"Gap Analysis Result:\n{gap}"})
+            
+            # Read any uploaded context documents
+            context_dir = root / ".vibeguard" / "context"
+            additional_context = ""
+            if context_dir.exists():
+                q.put({"type": "step", "text": "Loading uploaded context documents..."})
+                for cfile in context_dir.iterdir():
+                    if cfile.is_file() and cfile.suffix.lower() in [".md", ".txt", ".json", ".csv", ".yml", ".yaml", ".js", ".py", ".ts", ".html", ".css"]:
+                        try:
+                            content = cfile.read_text(encoding="utf-8")
+                            additional_context += f"\n--- {cfile.name} ---\n{content}\n"
+                        except:
+                            pass
+                import shutil
+                shutil.rmtree(context_dir, ignore_errors=True)
+            
             # Phase 0: Documentation First (Senior Dev Approach)
             q.put({"type": "step", "text": "Phase 0: Studying project and generating technical documentation..."})
             memory = generate_project_memory(path)
+            if additional_context:
+                memory += f"\n\n=== USER PROVIDED CONTEXT ===\n{additional_context}"
             
-            doc_context = {"raw_idea": instruction, "existing_memory": memory}
+            # Add gap context to instruction for doc generation
+            enriched_instruction = f"{instruction}\n\nGap Analysis context:\n{gap}"
+            
+            doc_context = {"raw_idea": enriched_instruction, "existing_memory": memory}
             _generate_prd(client, doc_context, root)
             _generate_architecture(client, doc_context, root)
-            q.put({"type": "success", "text": "✓ Documentation generated (PRD.md, ARCHITECTURE.md)"})
+            q.put({"type": "success", "text": "✓ Documentation generated (PRD.md, ARCHITECTURE.md) with gap awareness."})
 
             # Autonomous Deep Loop (The "Sleep & Build" Engine)
             max_iterations = 10
             for i in range(max_iterations):
                 q.put({"type": "step", "text": f"Iteration {i+1}: Analyzing current project state..."})
                 memory = generate_project_memory(path)
+                if additional_context:
+                    memory += f"\n\n=== USER PROVIDED CONTEXT ===\n{additional_context}"
                 
                 plan_prompt = f"""
 Current Project Memory: {memory}
@@ -438,6 +468,126 @@ def protect_after():
             q.put({"type": "error", "text": str(e)})
 
     return sse_stream(task, path)
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    data = request.json or {}
+    messages = data.get("messages", [])
+    path = data.get("path", "").strip().strip('"').strip("'")
+    active_file = data.get("activeFile", "")
+    active_content = data.get("activeContent", "")
+    
+    if not messages:
+        return jsonify({"error": "No messages"}), 400
+
+    def task(q, messages, path, active_file, active_content):
+        try:
+            from core.chat_engine import ChatEngine
+            engine = ChatEngine(project_path=path if path else None)
+            
+            # Inject active file context into system prompt if present
+            if active_file and active_content:
+                engine.system_prompt += f"\n\nUSER IS CURRENTLY VIEWING THIS FILE: {active_file}\nCONTENT:\n{active_content[:10000]}\n"
+                engine.system_prompt += "Focus your answers on this file if relevant."
+                
+            response = engine.get_response(messages)
+            q.put({"type": "chat_reply", "text": response})
+        except Exception as e:
+            q.put({"type": "error", "text": str(e)})
+
+    return sse_stream(task, messages, path, active_file, active_content)
+
+
+# ── Workspace Utils ────────────────────────────────────────────────────────────
+
+@app.route("/api/utils/folder-picker")
+def folder_picker():
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        path = filedialog.askdirectory()
+        root.destroy()
+        return jsonify({"path": path})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/utils/files", methods=["POST"])
+def list_workspace_files():
+    data = request.json or {}
+    path_str = data.get("path", "").strip().strip('"').strip("'")
+    if not path_str: return jsonify({"files": []})
+    
+    root = Path(path_str)
+    if not root.exists(): return jsonify({"error": "Path not found"}), 404
+
+    # Save to Recent Projects
+    try:
+        recent_path = Path.home() / ".vibeguard" / "recent_projects.json"
+        recent_path.parent.mkdir(exist_ok=True)
+        recent = []
+        if recent_path.exists():
+            recent = json.loads(recent_path.read_text())
+        
+        if str(root) not in recent:
+            recent.insert(0, str(root))
+            recent = recent[:10] # Keep last 10
+            recent_path.write_text(json.dumps(recent))
+    except: pass
+
+    def get_tree(p: Path):
+        tree = []
+        try:
+            entries = sorted(list(p.iterdir()), key=lambda x: (not x.is_dir(), x.name.lower()))
+            for entry in entries:
+                if entry.name.startswith((".", "__pycache__", "node_modules")): continue
+                rel = str(entry.relative_to(root))
+                node = {"name": entry.name, "path": rel, "is_dir": entry.is_dir()}
+                if entry.is_dir(): node["children"] = get_tree(entry)
+                tree.append(node)
+        except: pass
+        return tree
+
+    return jsonify({"files": get_tree(root), "root": str(root)})
+
+
+@app.route("/api/utils/recent", methods=["GET"])
+def get_recent_projects():
+    try:
+        recent_path = Path.home() / ".vibeguard" / "recent_projects.json"
+        if recent_path.exists():
+            return jsonify({"recent": json.loads(recent_path.read_text())})
+    except: pass
+    return jsonify({"recent": []})
+
+
+@app.route("/api/utils/read-file", methods=["POST"])
+def read_workspace_file():
+    data = request.json or {}
+    root_str = data.get("root", "").strip().strip('"').strip("'")
+    rel_path = data.get("path", "").strip()
+    
+    if not root_str or not rel_path: return jsonify({"error": "Missing path"}), 400
+    
+    fpath = Path(root_str) / rel_path
+    if not fpath.exists(): return jsonify({"error": "File not found"}), 404
+    
+    try:
+        content = fpath.read_text(encoding="utf-8", errors="ignore")
+        return jsonify({
+            "content": content,
+            "path": rel_path,
+            "name": fpath.name,
+            "extension": fpath.suffix.lower()
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 
 # ── Utils ──────────────────────────────────────────────────────────────────────
