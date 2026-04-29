@@ -31,6 +31,15 @@ UI_DIR   = BASE_DIR / "ui"
 app = Flask(__name__, static_folder=str(UI_DIR), static_url_path="")
 CORS(app)
 
+# Global Thread-Safe Log Buffer for Workspace Console
+SYSTEM_LOGS = []
+LOG_LOCK = threading.Lock()
+
+def add_log(text, log_type="log"):
+    with LOG_LOCK:
+        SYSTEM_LOGS.append({"text": text, "type": log_type, "time": time.time()})
+        if len(SYSTEM_LOGS) > 500: SYSTEM_LOGS.pop(0)
+
 # ── SSE streaming ──────────────────────────────────────────────────────────────
 
 class StreamCapture(io.TextIOBase):
@@ -641,6 +650,13 @@ def start_server(port: int = 7456, open_browser: bool = True):
     print(f"\n  VibeGuard Dashboard -> http://localhost:{port}\n  Press Ctrl+C to stop.\n")
     app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False, threaded=True)
 
+
+@app.route("/api/utils/logs")
+def get_system_logs():
+    after = float(request.args.get("after", 0))
+    with LOG_LOCK:
+        new_logs = [l for l in SYSTEM_LOGS if l["time"] > after]
+    return jsonify({"logs": new_logs})
 
 if __name__ == "__main__":
     start_server()
